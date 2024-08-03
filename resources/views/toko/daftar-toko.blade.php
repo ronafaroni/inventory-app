@@ -49,26 +49,24 @@
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     @elseif(session('delete'))
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <strong>Selamat! </strong> {{ session('delete') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <strong>Selamat! </strong> {{ session('delete') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
                     @endif
                     <div class="table-responsive">
                         <table class="table table-center table-hover datatable">
                             <thead class="thead-light">
                                 <tr>
                                     <th>#</th>
-                                    <th>Barcode</th>
                                     <th>Kode Toko</th>
                                     <th>Nama Toko</th>
                                     <th>Stok (pcs)</th>
                                     <th>Jual (pcs)</th>
                                     <th>Return (pcs)</th>
-                                    <th>Sales</th>
+                                    <th>Nama Sales</th>
                                     <th>Kunjungan</th>
-                                    <th>Pencapaian</th>
-                                    <th class="no-sort">Action</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -79,29 +77,29 @@
                                 @foreach ($toko as $data)
                                 <tr>
                                     <td>{{ $no++ }}</td>
-                                    <td>
-                                        <a href="{{ route('download-barcode', $data->kode_toko) }}">
-                                            {!! $data->barcode !!}
-                                        </a>    
-                                    </td>
                                     <td>{{ $data->kode_toko }}</td>
                                     <td>
                                         <h2 class="table-avatar">
                                             <a href="{{ route('edit-toko', $data->id_toko) }}">{{ $data->nama_toko }}</a>
                                         </h2>
-                                    <td>
-                                    <td>67</td>
-                                    <td>220</td>
-                                    <td>155</td>
-                                    <td>{{ $data->kode_sales }}</td>
+                                    </td>
+                                    <td>{{ number_format($data->faktur->sum('stok_toko') - $data->faktur->sum('stok_terjual'), 0, ',', '.') }}</td>
+                                    <td>{{ number_format($data->faktur->sum('stok_terjual'), 0, ',', '.') }}</td>
+                                    <td>{{ number_format($data->faktur->sum('stok_return'), 0, ',', '.') }}</td>
+                                    <td>{{ $data->sales ? $data->sales->nama_sales : '-' }}</td>
                                     <td>4</td>
-                               
-                                    <td class="text-end">
+                                    <td class="d-flex">
                                         <form action="{{ route('delete-toko', $data->id_toko) }}" method="POST">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-import m-2" onclick="return confirm('Apakah anda yakin ingin menghapus data toko ?')">
                                                 <span><i class="fa fa-trash-alt"></i></span>
+                                            </button>
+                                        </form>
+                                        <form action="{{ route('download-barcode', $data->kode_toko) }}" method="GET">
+                                            @csrf
+                                            <button type="submit" class="btn btn-import m-2">
+                                                <span><i class="fa fa-download"></i> Barcode</span>
                                             </button>
                                         </form>
                                     </td>                                    
@@ -115,4 +113,4 @@
         </div>
     </div>
 
-@endsection()
+@endsection

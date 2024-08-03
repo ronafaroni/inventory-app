@@ -19,4 +19,9 @@ class Harga extends Model
         'harga',
         'diskon'
     ];
+
+    public function item()
+    {
+        return $this->belongsTo(Item::class, 'kode_item', 'kode_item');
+    }
 }

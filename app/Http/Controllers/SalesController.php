@@ -9,6 +9,7 @@ use App\Models\Sales;
 use App\Models\Item;
 use App\Models\StokSales;
 use App\Models\ReturnStok;
+use Illuminate\Support\Facades\Hash;
 
 class SalesController extends Controller
 {
@@ -25,23 +26,11 @@ class SalesController extends Controller
 
     public function stok_sales()
     {
-        // Query untuk menggabungkan dan menjumlahkan stok
-        $sales = DB::table('sales')
-            ->leftJoin('stok_sales', 'sales.kode_sales', '=', 'stok_sales.kode_sales')
-            ->leftJoin('toko', 'sales.kode_sales', '=', 'toko.kode_sales')
-            ->select(
-                'sales.id_sales',
-                'sales.kode_sales',
-                'sales.nama_sales',
-                DB::raw('IFNULL(SUM(stok_sales.stok_sales), 0) as total_stok'),
-                DB::raw('COUNT(toko.kode_sales) as total_toko')
-            )
-            ->groupBy('sales.id_sales', 'sales.kode_sales', 'sales.nama_sales')
-            ->get();
-    
-        return view('sales.stok-sales', compact('sales')); 
+        $sales = Sales::with('stokSales', 'faktur', 'toko')->get();
+
+        return view('sales.stok-sales', compact('sales'));
     }
-    
+
     public function stok_masuk($id_sales)
     {
         $data_item = Item::all();
@@ -130,7 +119,7 @@ class SalesController extends Controller
         $sales->alamat = $request->input('alamat');
         $sales->no_telp = $request->input('no_telp');
         $sales->username = $request->input('username');
-        $sales->password = bcrypt($request->input('password')); // Simpan password yang telah di-hash
+        $sales->password = Hash::make($request->input('password')); // Simpan password yang telah di-hash
         $sales->foto = $tujuan_upload . $nama_file;
         $sales->pencapaian = 1;
         $sales->save();
@@ -177,7 +166,7 @@ class SalesController extends Controller
         $sales->alamat = $request->input('alamat');
         $sales->no_telp = $request->input('no_telp');
         $sales->username = $request->input('username');
-        $sales->password = bcrypt($request->input('password')); // Simpan password yang telah di-hash
+        $sales->password = Hash::make($request->input('password')); // Simpan password yang telah di-hash
         $sales->foto = $tujuan_upload . $nama_file;
         $sales->pencapaian = 1;
         $sales->update();
@@ -206,30 +195,35 @@ class SalesController extends Controller
     }
     
     // Simpan Tambahan Stok
-    public function simpan_stok_sales(Request $request){
-
+    public function simpan_stok_sales(Request $request)
+    {
         // Mendekode data JSON yang dikirim dari form
         $data = json_decode($request->data, true);
 
-        // Melakukan loop pada setiap item dan menyimpannya ke dalam database
-        foreach ($data as $sales) {
-            // Simpan ke database
-            $stok_sales = new StokSales();
-            $stok_sales->id_transaksi = 'SS'.rand(10000, 99999);
-            $stok_sales->kode_sales   = $sales['kodeSales'];
-            $stok_sales->nama_sales   = $sales['namaSales'];
-            $stok_sales->kode_item    = $sales['kodeItem'];
-            $stok_sales->nama_item    = $sales['namaItem'];
-            $stok_sales->stok_sales   = $sales['tambahStok'];
-            $stok_sales->save();
-        }
+        // Periksa apakah data berhasil didekode dan merupakan array
+        if (is_array($data) && !empty($data)) {
+            // Melakukan loop pada setiap item dan menyimpannya ke dalam database
+            foreach ($data as $sales) {
+                // Simpan ke database
+                $stok_sales = new StokSales();
+                $stok_sales->id_transaksi = 'SS' . rand(10000, 99999);
+                $stok_sales->kode_sales = $sales['kodeSales'];
+                $stok_sales->nama_sales = $sales['namaSales'];
+                $stok_sales->kode_item = $sales['kodeItem'];
+                $stok_sales->nama_item = $sales['namaItem'];
+                $stok_sales->stok_sales = $sales['tambahStok'];
+                $stok_sales->save();
+            }
 
-        // Flash message ke sesi
-        session()->flash('success', 'Stok Sales berhasil di tambahkan.');
+            // Flash message ke sesi
+            session()->flash('success', 'Stok Sales berhasil ditambahkan.');
+        } else {
+            // Flash message ke sesi untuk error
+            session()->flash('error', 'Data tidak valid atau kosong.');
+        }
 
         // Redirect
         return redirect()->route('stok-sales');
-
     }
 
     public function riwayat_stok_sales($kode_sales) {

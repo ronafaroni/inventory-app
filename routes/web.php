@@ -86,10 +86,22 @@ Route::get('/faktur-terima-barang', [TransaksiController::class, 'faktur_terima_
 Route::get('/faktur-pembayaran', [TransaksiController::class, 'faktur_pembayaran'])->name('faktur-pembayaran')->middleware(['auth', 'admin']);
 
 
-
-
 //untuk tampilan users
 Route::get('/users', [UserController::class, 'users'])->name('users');
 Route::get('/profile', [UserController::class, 'profile'])->name('profile');
 Route::get('/kunjungan', [UserController::class, 'kunjungan'])->name('kunjungan');
+
+//ini tampilan toko pada sales
 Route::get('/toko-sales', [UserController::class, 'toko_sales'])->name('toko-sales');
+Route::get('/tambah-toko-sales', [UserController::class, 'tambah_toko_sales'])->name('tambah-toko-sales');
+Route::post('/simpan-toko-sales', [UserController::class, 'simpan_toko_sales'])->name('simpan-toko-sales');
+Route::get('/stok-keluar-sales', [UserController::class, 'stok_keluar_sales'])->name('stok-keluar-sales');
+
+Route::get('/stok-masuk-sales/{id_toko}', [UserController::class, 'stok_masuk_sales'])->name('stok-masuk-sales');
+Route::get('/item-details/{kode_item}', [UserController::class, 'getItemDetails']);
+Route::post('/simpan-faktur-barang', [UserController::class, 'simpan_faktur_barang'])->name('simpan-faktur-barang');
+Route::get('/faktur-barang/{kode_toko}', [UserController::class, 'faktur_barang'])->name('faktur-barang');
+Route::get('/faktur-bayar/{no_faktur_barang}', [UserController::class, 'faktur_bayar'])->name('faktur-bayar');
+Route::post('/save-terjual/{id_faktur}', [UserController::class, 'saveTerjual'])->name('save-terjual');
+Route::post('/save-return/{id_faktur}', [UserController::class, 'saveReturn'])->name('save-return');
+

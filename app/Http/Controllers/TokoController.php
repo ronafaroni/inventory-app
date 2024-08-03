@@ -12,7 +12,7 @@ class TokoController extends Controller
 {
     public function daftar_toko()
     {
-        $toko = Toko::all();
+        $toko = Toko::with('faktur', 'sales')->get();
         // Generate barcode for each store
         // Generate barcode for each store
         foreach ($toko as $data) {
@@ -26,7 +26,7 @@ class TokoController extends Controller
     {
         $data_sales = Sales::all();
         return view('toko.tambah-toko', compact('data_sales'));
-    }
+    } 
 
     public function simpan_toko(Request $request)
     {
@@ -39,6 +39,16 @@ class TokoController extends Controller
             'link_gmap' => 'required',
             'kode_sales' => 'required',
             'gambar_toko' => 'required',
+        ],
+        [
+            'kode_toko.required' => 'Kode Toko harus diisi.',
+            'nama_toko.required' => 'Nama harus diisi.',
+            'pemilik_toko.required' => 'Pemilik Toko harus diisi.',
+            'no_telp.required' => 'Nomor Telepon harus diisi.',
+            'alamat.required' => 'Alamat harus diisi.',
+            'link_gmap.required' => 'Link Google Maps harus diisi.',
+            'kode_sales.required' => 'Kode Sales harus diisi.',
+            'gambar_toko.required' => 'Gambar Toko harus diisi.',
         ]);
 
         //Membuat barcode
@@ -155,7 +165,7 @@ class TokoController extends Controller
         // Set the content type and download headers
         $headers = [
             'Content-Type' => 'image/png',
-            'Content-Disposition' => 'attachment; filename="barcode.png"',
+            'Content-Disposition' => 'attachment; filename="Barcode-' . $kode_toko . '.png"',
         ];
 
         // Convert the barcode to image data

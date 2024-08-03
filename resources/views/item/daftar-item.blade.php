@@ -65,7 +65,6 @@
                                     <th>#</th>
                                     <th>ID Item</th>
                                     <th>Nama Item</th>
-                                    <th>Stok Barang (pcs)</th>
                                     <th>Datetime</th>
                                     <th class="no-sort">Action</th>
                                 </tr>
@@ -89,7 +88,6 @@
                                             <a href="{{ route('edit-item', $item->id_item) }}">{{ $item->nama_item }}</a>
                                         </h2>
                                     </td>
-                                    <td>{{ number_format($item->stok_item, 0, ',', '.') }}</td>
                                     <td>{{ $item->created_at }}</td>
                                     <td class="d-flex">
                                         <form action="{{ route('delete-item', $item->id_item) }}" method="POST">

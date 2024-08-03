@@ -30,7 +30,7 @@
                         <div class="dash-count">
                             <div class="dash-title">Stok Sales</div>
                             <div class="dash-counts">
-                                <p>{{ number_format($total_sales_stok) }}</p>
+                                <p>{{ number_format($total_sales_stok - $stok_toko) }}</p>
                             </div>
                         </div>
                     </div>
@@ -42,12 +42,12 @@
                 <div class="card-body">
                     <div class="dash-widget-header">
                         <span class="dash-widget-icon bg-2">
-                            <i class="fas fa-users"></i>
+                            <i class="fas fa-store"></i>
                         </span>
                         <div class="dash-count">
-                            <div class="dash-title">Jumlah Sales</div>
+                            <div class="dash-title">Stok Toko</div>
                             <div class="dash-counts">
-                                <p>{{ $total_sales }}</<p>
+                                <p>{{ $stok_toko - $stok_terjual }}</<p>
                             </div>
                         </div>
                     </div>
@@ -59,12 +59,12 @@
                 <div class="card-body">
                     <div class="dash-widget-header">
                         <span class="dash-widget-icon bg-3">
-                            <i class="fas fa-store"></i>
+                            <i class="fas fa-users"></i>
                         </span>
                         <div class="dash-count">
-                            <div class="dash-title">Jumlah Toko</div>
+                            <div class="dash-title">Toko | Sales</div>
                             <div class="dash-counts">
-                                <p>{{ $total_toko }}</</p>
+                                <p>{{ $total_toko }} | {{ $total_sales }}</</p>
                             </div>
                         </div>
                     </div>

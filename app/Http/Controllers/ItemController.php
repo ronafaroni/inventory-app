@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Item;
 use App\Models\Stok;
+use App\Models\Faktur;
 use App\Models\StokSales;
 
 class ItemController extends Controller
@@ -51,23 +52,10 @@ class ItemController extends Controller
 
     public function stok_barang()
     {
-        // Query untuk menggabungkan dan menjumlahkan stok
-        $items = DB::table('items')
-            ->leftJoin('stoks', 'items.kode_item', '=', 'stoks.kode_item')
-            ->leftJoin('stok_sales', 'items.kode_item', '=', 'stok_sales.kode_item') // Memperbaiki join di sini
-            ->select(
-                'items.kode_item',
-                'items.nama_item',
-                DB::raw('IFNULL(SUM(stoks.stok_item), 0) as total_stok'),
-                DB::raw('IFNULL(SUM(items.stok_item), 0) as total_stok_items'),
-                DB::raw('IFNULL(SUM(stok_sales.stok_sales), 0) as total_stok_sales') // Memperbaiki nama kolom di sini
-            )
-            ->groupBy('items.kode_item', 'items.nama_item')
-            ->get();
-    
-        return view('item/stok-barang', compact('items'));
+        $items = Item::with('stoks','stok_sales','faktur')->get();
+        return view('item.stok-barang', compact('items'));
     }
-    
+
 
     public function tambah_stok()
     {
@@ -77,7 +65,7 @@ class ItemController extends Controller
 
     public function riwayat_stok()
     {
-        $stoks = Stok::with('item')->get();
+        $stoks = Stok::all();
         return view('item/riwayat-stok', compact('stoks'));
     }   
 
@@ -88,7 +76,6 @@ class ItemController extends Controller
         $validated = $request->validate([
             'kode_item' => 'required',
             'nama_item' => 'required',
-            'stok_item' => 'required',
             'upload_gambar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:5000'
         ], [
             'required' => 'Kolom :attribute wajib diisi.',
@@ -109,7 +96,6 @@ class ItemController extends Controller
         $item = new Item;
         $item->kode_item = $request->input('kode_item');
         $item->nama_item = $request->input('nama_item');
-        $item->stok_item = $request->input('stok_item'); // Pastikan kolom ini sesuai dengan inputan form
         $item->gambar_produk = $tujuan_upload . $nama_file;
         $item->save();
 
@@ -130,7 +116,6 @@ class ItemController extends Controller
         $validated = $request->validate([
             'kode_item' => 'required',
             'nama_item' => 'required',
-            'stok_item' => 'required',
             'upload_gambar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:5000'
         ], [
             'required' => 'Kolom :attribute wajib diisi.',
@@ -151,7 +136,6 @@ class ItemController extends Controller
         $item = Item::findOrFail($id_item);
         $item->kode_item = $request->input('kode_item');
         $item->nama_item = $request->input('nama_item');
-        $item->stok_item = $request->input('stok_item'); // Pastikan kolom ini sesuai dengan inputan form
         $item->gambar_produk = $tujuan_upload . $nama_file;
         $item->update();
 

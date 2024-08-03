@@ -13,7 +13,7 @@ class Item extends Model
     protected $primaryKey = 'id_item';
 
     protected $fillable = [
-        'id_item','nama_item','stok_item','gambar_produk'
+        'id_item','nama_item','gambar_produk'
     ];
 
     public function stoks()
@@ -26,7 +26,15 @@ class Item extends Model
         return $this->hasMany(StokSales::class, 'kode_item', 'kode_item');
     }
 
+    public function faktur()
+    {
+        return $this->hasMany(Faktur::class, 'kode_item', 'kode_item');
+    }
 
+    public function harga()
+    {
+        return $this->hasMany(Harga::class, 'kode_item', 'kode_item');
+    }
 
 }
 

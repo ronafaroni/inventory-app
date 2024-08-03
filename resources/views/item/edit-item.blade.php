@@ -29,20 +29,14 @@
                                                 <div class="text-danger">{{ $message }}</div>
                                             @enderror
                                         </div>
-                                        <div class="col-lg-12 col-sm-12 mb-3">
-                                            <label>Stok Barang (pcs) <span class="text-danger">*</span></label>
-                                            <input type="number" name="stok_item" value="{{ $item->stok_item }}" class="form-control" autocomplete="off" placeholder="Stok Barang Gudang" @error('stok_item') is-invalid @enderror>
-                                            @error('stok_item')
-                                                <div class="text-danger">{{ $message }}</div>
-                                            @enderror
-                                        </div>
+        
                                         <div class="col-lg-12 col-sm-12 mb-0 pb-0">
                                             <label>Upload Gambar</label>
                                             <div class="input-block service-upload mb-0">
                                                 <span><img src="{{ asset('assets/img/icons/drop-icon.svg') }}" alt="upload"></span>
                                                 <h6 class="drop-browse align-center">Drop your files here or<span class="text-primary ms-1">browse</span></h6>
                                                 <p class="text-muted">Maximum size: 5MB</p>
-                                                <input type="file" name="upload_gambar" multiple="" id="image_sign" @error('upload_gambar') is-invalid @enderror>
+                                                <input type="file" name="upload_gambar" value="{{ $item->gambar_produk }}" multiple="" id="image_sign" @error('upload_gambar') is-invalid @enderror>
                                                 <div id="frames"></div>
                                             </div>
                                             @error('upload_gambar')
@@ -56,7 +50,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Update Item</button>
+                    <button type="submit" class="btn btn-primary"><i class="fa fa-refresh me-2" aria-hidden="true"></i> Update Item</button>
                 </div>
             </form>
         </div>

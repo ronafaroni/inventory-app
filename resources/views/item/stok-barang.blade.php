@@ -67,17 +67,28 @@
                                     <td>{{ $item->nama_item }}</td>
                                     <td>
                                         {{ 
-                                            number_format($item->total_stok + $item->total_stok_items - $item->total_stok_sales, 0, ',', '.')
+                                            number_format($item->stoks->sum('stok_item') - $item->stok_sales->sum('stok_sales'), 0, ',', '.')
                                         }}
                                     </td>
                                     <td>
                                         {{ 
-                                            number_format($item->total_stok_sales, 0, ',', '.')
+                                            number_format($item->stok_sales->sum('stok_sales') - $item->faktur->sum('stok_toko'), 0, ',', '.')
                                         }}
                                     </td>
-                                    <td>0</td>
-                                    <td>0</td>
-                                    <td>0</td>
+                                    <td>{{ 
+                                            number_format($item->faktur->sum('stok_toko') - $item->faktur->sum('stok_terjual'), 0, ',', '.');
+                                        }}
+                                    </td>
+                                    <td>
+                                        {{
+                                            number_format($item->faktur->sum('stok_terjual'), 0, ',', '.')
+                                        }}
+                                    </td>
+                                    <td>
+                                        {{
+                                            number_format(floor($item->faktur->sum('stok_terjual') / 10), 0, ',', '.')
+                                        }}
+                                    </td>
                                 </tr>
                                 @endforeach
                             </tbody>

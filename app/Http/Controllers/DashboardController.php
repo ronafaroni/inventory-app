@@ -9,19 +9,21 @@ use App\Models\Stok;
 use App\Models\Sales;
 use App\Models\Toko;
 use App\Models\StokSales;
+use App\Models\Faktur;
 
 class DashboardController extends Controller
 {
     public function index()
     {
         // Query untuk menggabungkan dan menjumlahkan stok
-        $stok_item = Item::with('stok')->sum('stok_item');
         $stok_stok = Stok::with('item')->sum('stok_item');
+        $stok_toko = Faktur::with('faktur')->sum('stok_toko');
+        $stok_terjual = Faktur::with('faktur')->sum('stok_terjual');
         $total_sales_stok = StokSales::with('stok_sales')->sum('stok_sales');
-        $total_stok = $stok_item + $stok_stok;
+        $total_stok = $stok_stok;
         $total_sales = Sales::count();
         $total_toko = Toko::count();
-        return view('admin/dashboard', compact('total_stok', 'total_sales', 'total_toko', 'total_sales_stok'));
+        return view('admin/dashboard', compact('total_stok', 'total_sales', 'total_toko', 'total_sales_stok', 'stok_toko', 'stok_terjual'));
     }
 
     public function cek()

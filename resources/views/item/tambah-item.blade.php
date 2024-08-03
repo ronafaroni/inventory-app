@@ -35,17 +35,8 @@
                                             </div>
                                         </div>
                                         <div class="col-lg-12 col-sm-12">
-                                            <div class="input-block mb-3">
-                                                <label>Stok Barang (pcs) <span class="text-danger">*</span></label>
-                                                <input type="number" name="stok_item" class="form-control" autocomplete="off" value="{{ old('stok_item') }}" placeholder="Stok Barang Gudang" @error('stok_item') is-invalid @enderror>
-                                                @error('stok_item')
-                                                    <div class="text-danger">{{ $message }}</div>
-                                                @enderror	
-                                            </div>									
-                                        </div>
-                                        <div class="col-lg-12 col-sm-12">
                                             <div class="input-block mb-0 pb-0">
-                                                <label>Upload Gambar</label>
+                                                <label>Upload Gambar  <span class="text-danger">*</span></label>
                                                 <div class="input-block service-upload mb-0">
                                                     <span><img src="assets/img/icons/drop-icon.svg" alt="upload"></span>
                                                     <h6 class="drop-browse align-center">Drop your files here or<span class="text-primary ms-1">browse</span></h6>

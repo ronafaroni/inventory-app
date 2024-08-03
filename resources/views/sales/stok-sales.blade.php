@@ -85,10 +85,10 @@
                                         <td>{{ $no++ }}</td>
                                         <td>{{ $data->kode_sales }}</td>
                                         <td>{{ $data->nama_sales }}</td>
-                                        <td>{{ number_format($data->total_stok) }}</td>
-                                        <td>450</td>
-                                        <td>120</td>
-                                        <td>{{ $data->total_toko }}</td>
+                                        <td>{{ number_format($data->stokSales->sum('stok_sales') - $data->faktur->sum('stok_toko')) }}</td>
+                                        <td>{{ number_format($data->faktur->sum('stok_toko') - $data->faktur->sum('stok_terjual')) }}</td>
+                                        <td>{{ number_format($data->faktur->sum('stok_terjual')) }}</td>
+                                        <td>{{ number_format($data->toko->count()) }}</td>
                                         <td class="d-flex align-items-center">
                                             <a href="{{ route('riwayat-stok-sales', $data->kode_sales) }}" class="btn btn-greys bg-history-light me-2" >
                                                 <i class="far fa-eye me-1"></i> Riwayat
@@ -112,7 +112,7 @@
                                                     </ul>
                                                 </div>
                                             </div>
-                                        </td>
+                                        </td> 
                                     </tr>
                                     @endforeach
                                 </tbody>

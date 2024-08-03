@@ -36,7 +36,7 @@
                                     <input type="text" name="username" id="username" class="form-control" placeholder="Masukkan Username Anda" autocomplete="off" value="{{ old('username') }}">
                                     @error('username')
                                     <div class="text-danger">
-                                        {{ $message }}
+                                        {{ $message }} 
                                     </div>
                                     @enderror
                                 </div>

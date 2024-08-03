@@ -127,58 +127,61 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
-    let dataArray = [];
+    let dataArray = []; 
+
+$('#addData').on('click', function() {
+    const kodeSales = $('#kode_sales').val();
+    const namaSales = $('#nama_sales').val();
+    const kodeItem = $('#kode_item option:selected').data('kode');
+    const namaItem = $('#kode_item').val();
+    const tambahStok = $('#tambah_stok').val();
     
-    $('#addData').on('click', function() {
-        const kodeSales = $('#kode_sales').val();
-        const namaSales = $('#nama_sales').val();
-        const kodeItem = $('#kode_item option:selected').data('kode');
-        const namaItem = $('#kode_item').val();
-        const tambahStok = $('#tambah_stok').val();
-        
-        if ( kodeSales && namaSales && kodeItem && namaItem && tambahStok) {
-            const dataObject = { kodeSales, namaSales, kodeItem, namaItem, tambahStok };
-            dataArray.push(dataObject);
-            updateTable();
-            $('#dataForm')[0].reset();
-        }
-    });
-
-    function formatRupiah(angka) {
-        return angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Format dengan titik
-    }
-
-    function updateTable() {
-        const tableBody = $('#dataTable tbody');
-        tableBody.empty();
-        let totalStok = 0;
-
-        dataArray.forEach((data, index) => {
-            totalStok += parseInt(data.tambahStok, 10); // Menambahkan stok item ke total stok
-            tableBody.append(`
-                <tr>
-                    <td>${index + 1}</td>
-                    <td>${data.kodeItem}</td>
-                    <td>${data.namaItem}</td>
-                    <td>${formatRupiah(data.tambahStok)}</td> <!-- Menggunakan formatRupiah -->
-                    <td class="d-flex">
-                        <button type="button" class="btn btn-import me-2" onclick="deleteData(${index})"><i class="fa fa-trash"></i></button>
-                    </td>
-                </tr>
-            `);
-        });
-
-        $('#totalStok').text(formatRupiah(totalStok)); // Menampilkan total stok dengan format rupiah
-    }
-
-    function deleteData(index) {
-        dataArray.splice(index, 1); 
+    if (kodeSales && namaSales && kodeItem && namaItem && tambahStok) {
+        const dataObject = { kodeSales, namaSales, kodeItem, namaItem, tambahStok };
+        dataArray.push(dataObject);
         updateTable();
+        $('#dataForm')[0].reset();
+    } else {
+        alert('Semua field harus diisi.');
     }
+});
 
-    $('#saveForm').on('submit', function() {
-        $('#data').val(JSON.stringify(dataArray));
+function formatRupiah(angka) {
+    return angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Format dengan titik
+}
+
+function updateTable() {
+    const tableBody = $('#dataTable tbody');
+    tableBody.empty();
+    let totalStok = 0;
+
+    dataArray.forEach((data, index) => {
+        totalStok += parseInt(data.tambahStok, 10); // Menambahkan stok item ke total stok
+        tableBody.append(`
+            <tr>
+                <td>${index + 1}</td>
+                <td>${data.kodeItem}</td>
+                <td>${data.namaItem}</td>
+                <td>${formatRupiah(data.tambahStok)}</td> <!-- Menggunakan formatRupiah -->
+                <td class="d-flex">
+                    <button type="button" class="btn btn-import me-2" onclick="deleteData(${index})"><i class="fa fa-trash"></i></button>
+                </td>
+            </tr>
+        `);
     });
+
+    $('#totalStok').text(formatRupiah(totalStok)); // Menampilkan total stok dengan format rupiah
+}
+
+function deleteData(index) {
+    dataArray.splice(index, 1); 
+    updateTable();
+}
+
+$('#saveForm').on('submit', function(e) {
+    $('#data').val(JSON.stringify(dataArray)); // Update hidden input with JSON string
+});
+
 </script>
 
 @endsection

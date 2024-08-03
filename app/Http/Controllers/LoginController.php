@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use App\Models\Sales;
 
 class LoginController extends Controller
@@ -49,42 +50,48 @@ class LoginController extends Controller
         ]);
     }
 
-   
     public function authenticate_user(Request $request)
     {
+        // Logging for debugging
+        Log::info('Starting authentication process');
+
         $credentials = $request->validate([
             'username' => ['required'],
             'password' => ['required'],
         ]);
 
-        \Log::info('Credentials:', $credentials);
+        Log::info('Credentials validated', $credentials);
 
         $sales = Sales::where('username', $credentials['username'])->first();
 
-        \Log::info('Sales user:', [$sales]);
-
         if ($sales) {
+            Log::info('User found', ['username' => $credentials['username']]);
+
             if (Hash::check($credentials['password'], $sales->password)) {
+                Log::info('Password check successful');
+
                 if (Hash::needsRehash($sales->password)) {
+                    Log::info('Rehashing password');
                     $sales->password = Hash::make($credentials['password']);
                     $sales->save();
                 }
 
                 Auth::guard('sales')->login($sales);
                 $request->session()->regenerate();
+                Log::info('User logged in successfully');
+
                 return redirect()->intended('/users');
             } else {
-                return back()->withErrors([
-                    'password' => 'Password salah, silahkan coba kembali.',
-                ]);
+                Log::warning('Password check failed', ['username' => $credentials['username']]);
             }
         } else {
-            return back()->withErrors([
-                'username' => 'Username tidak ditemukan, silahkan coba kembali.',
-            ]);
+            Log::warning('User not found', ['username' => $credentials['username']]);
         }
-    }
 
+        return back()->withErrors([
+            'username' => 'Login gagal, silahkan coba kembali.',
+        ]);
+    }
 
     public function logout(Request $request)
     {
