@@ -8,6 +8,7 @@ use App\Models\Item;
 use App\Models\Stok;
 use App\Models\Faktur;
 use App\Models\StokSales;
+use Illuminate\Validation\Rule;
 
 class ItemController extends Controller
 {
@@ -55,8 +56,6 @@ class ItemController extends Controller
         $items = Item::with('stoks','stok_sales','faktur')->get();
         return view('item.stok-barang', compact('items'));
     }
-
-
     public function tambah_stok()
     {
         $items = Item::all();
@@ -74,10 +73,11 @@ class ItemController extends Controller
 
         // Validasi form input item
         $validated = $request->validate([
-            'kode_item' => 'required',
+            'kode_item' => 'required|unique:items',
             'nama_item' => 'required',
             'upload_gambar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:5000'
         ], [
+            'unique' => 'Kolom :attribute sudah ada.',
             'required' => 'Kolom :attribute wajib diisi.',
             'image' => 'Kolom :attribute harus berupa gambar.',
             'mimes' => 'Kolom :attribute harus memiliki format file :values.',
@@ -108,46 +108,52 @@ class ItemController extends Controller
         // Redirect
         return redirect()->route('daftar-item', compact('items'));
     }
-
-    //Update Item  
-    public function update_item(Request $request, $id_item){
-
+    
+    public function update_item(Request $request, $id_item)
+    {
+        // Cari item berdasarkan ID
+        $item = Item::findOrFail($id_item);
+    
         // Validasi form input item
         $validated = $request->validate([
-            'kode_item' => 'required',
-            'nama_item' => 'required',
-            'upload_gambar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:5000'
+            'kode_item' => [
+                'required',
+                Rule::unique('items', 'kode_item')->ignore($item->kode_item, 'kode_item'),
+            ],
+            'nama_item' => [
+                'required',
+                Rule::unique('items', 'nama_item')->ignore($item->nama_item, 'nama_item'),
+            ],
+            'upload_gambar' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:5000'
         ], [
+            'unique' => 'Kolom :attribute sudah ada.',
             'required' => 'Kolom :attribute wajib diisi.',
             'image' => 'Kolom :attribute harus berupa gambar.',
             'mimes' => 'Kolom :attribute harus memiliki format file :values.',
             'max' => 'Kolom :attribute tidak boleh lebih dari :max kb.'
         ]);
-
-        // Proses upload file
-        $file = $request->file('upload_gambar');
-        $nama_file = $request->input('nama_item') . '.' . $file->getClientOriginalExtension();
-        // Tujuan file diupload kemana
-        $tujuan_upload = '/uploads/item/';
-        // Tempat file diupload
-        $file->move(public_path($tujuan_upload), $nama_file);
-
-        // Simpan ke database
-        $item = Item::findOrFail($id_item);
+    
+        // Proses upload file jika ada gambar baru
+        if ($request->hasFile('upload_gambar')) {
+            $file = $request->file('upload_gambar');
+            $nama_file = $request->input('nama_item') . '.' . $file->getClientOriginalExtension();
+            $tujuan_upload = '/uploads/item/';
+            $file->move(public_path($tujuan_upload), $nama_file);
+            $item->gambar_produk = $tujuan_upload . $nama_file;
+        }
+    
+        // Update data di database
         $item->kode_item = $request->input('kode_item');
         $item->nama_item = $request->input('nama_item');
-        $item->gambar_produk = $tujuan_upload . $nama_file;
         $item->update();
-
-        // Untuk menampilkan data item
-        $items = Item::all();
-
-             // Flash message ke sesi
-             session()->flash('update', 'Data berhasil diperbarui!');
-
-        // Redirect
-        return view('item/daftar-item', compact('items'));
+    
+        // Flash message ke sesi
+        session()->flash('update', 'Data berhasil diperbarui!');
+    
+        // Redirect ke halaman daftar item
+        return redirect()->route('daftar-item')->with('items', Item::all());
     }
+    
 
     // Simpan Tambahan Stok
     public function simpan_stok(Request $request){

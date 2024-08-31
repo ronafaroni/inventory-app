@@ -8,24 +8,6 @@
             <div class="list-btn">
                 <ul class="filter-list">
                     <li>
-                        <div class="dropdown dropdown-action" data-bs-toggle="tooltip" data-bs-placement="top" title="Download">
-                            <a href="#" class="btn-filters" data-bs-toggle="dropdown" aria-expanded="false"><span><i class="fe fe-download"></i></span></a>
-                            <div class="dropdown-menu dropdown-menu-end">
-                                <ul class="d-block">
-                                    <li>
-                                        <a class="d-flex align-items-center download-item" href="javascript:void(0);" download><i class="far fa-file-pdf me-2"></i>PDF</a>
-                                    </li>
-                                    <li>
-                                        <a class="d-flex align-items-center download-item" href="javascript:void(0);" download><i class="far fa-file-text me-2"></i>CVS</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>														
-                    </li>
-                    <li>
-                        <a class="btn-filters" href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Print"><span><i class="fe fe-printer"></i></span> </a>
-                    </li>
-                    <li>
                         <a class="btn btn-primary" href="{{ route('tambah-sales') }}"><i class="fa fa-user-plus me-2" aria-hidden="true"></i>Tambah Sales</a>
                     </li>
                 </ul>
@@ -63,7 +45,8 @@
                                     <th>Nama Sales</th>
                                     <th>Alamat</th>
                                     <th>No. Handphone</th>
-                                    <th>Username</th>
+                                    <th>Kunjungan / Minggu ini</th>
+                                    <th>Jumlah Penjualan</th>
                                     <th>Pencapaian</th>
                                     <th class="no-sort">Action</th>
                                 </tr>
@@ -88,15 +71,41 @@
                                     </td>
                                     <td>{{ $data->alamat }}</td>
                                     <td>{{ $data->no_telp }}</td>
-                                    <td>{{ $data->username }}</td>
-                                    <td>{{ $data->pencapaian }}</td>
+
+                                    @php
+                                    // Menghitung kunjungan per minggu
+                                        $kunjunganPerMinggu = $data->kunjungan->filter(function ($kunjungan) {
+                                            return \Carbon\Carbon::parse($kunjungan->created_at)->isSameWeek(\Carbon\Carbon::now());
+                                        })->count();
+
+                                        // Menghitung jumlah stok terjual dari faktur
+                                        $stokTerjual = $data->faktur->sum('stok_terjual');
+
+                                    @endphp
+    
+                                    <td> {{ $data->kunjungan->count() }} / {{ $kunjunganPerMinggu }}</td>
+                                    <td>{{ number_format($stokTerjual) ?? 0 }} Pcs</td>
+                                    <td>
+                                        @if ($data->pencapaian > 0 && $data->pencapaian == '' && $data->pencapaian == null)
+                                            <i class="fa fa-star"></i>
+                                        @elseif ($data->pencapaian == '1')
+                                            <i class="fa fa-star"></i>
+                                        @elseif ($data->pencapaian == '2')
+                                            <i class="fa fa-star"></i> <i class="fa fa-star"></i>
+                                        @elseif ($data->pencapaian == '3')
+                                            <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i>
+                                        @elseif ($data->pencapaian == '4')
+                                            <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i>
+                                        @elseif ($data->pencapaian == '5')
+                                            <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i>
+                                        @endif
+                                    </td>
                                     <td class="d-flex">
                                         <form action="{{ route('delete-sales', $data->id_sales) }}" method="POST">
                                             @csrf
                                             @method('DELETE')
                                             <button {{ route('delete-sales', $data->id_sales) }} class="btn btn-import me-2" onclick="return confirm('Apakah anda yakin ingin menghapus sales ?')"><span><i class="fa fa-trash me-1"></i></span></button>
                                         </form>
-                                        
                                     </td>
                                 </tr>
                                 @endforeach

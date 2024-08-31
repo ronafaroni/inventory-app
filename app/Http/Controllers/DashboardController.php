@@ -10,6 +10,7 @@ use App\Models\Sales;
 use App\Models\Toko;
 use App\Models\StokSales;
 use App\Models\Faktur;
+use App\Models\Kunjungan;
 
 class DashboardController extends Controller
 {
@@ -23,7 +24,8 @@ class DashboardController extends Controller
         $total_stok = $stok_stok;
         $total_sales = Sales::count();
         $total_toko = Toko::count();
-        return view('admin/dashboard', compact('total_stok', 'total_sales', 'total_toko', 'total_sales_stok', 'stok_toko', 'stok_terjual'));
+        $kunjungan = Kunjungan::all();
+        return view('admin/dashboard', compact('total_stok', 'total_sales', 'total_toko', 'total_sales_stok', 'stok_toko', 'stok_terjual', 'kunjungan'));
     }
 
     public function cek()

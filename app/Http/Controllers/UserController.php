@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+ 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Sales;
@@ -34,6 +34,7 @@ class UserController extends Controller
                 'toko.alamat',
                 'faktur.kode_sales',
                 DB::raw('IFNULL(SUM(faktur.stok_toko), 0) as total_stok_toko'),
+                DB::raw('IFNULL(SUM(faktur.stok_terjual), 0) as total_terjual'),
             )
             ->groupBy('toko.kode_toko', 'toko.nama_toko', 'toko.pemilik_toko', 'toko.alamat', 'faktur.kode_sales')
             ->where('faktur.kode_sales', $kode)
@@ -96,12 +97,12 @@ class UserController extends Controller
 
         session()->flash('success', 'Data toko berhasil ditambahkan.');
 
-        $toko = Toko::all();
-        foreach ($toko as $data) {
+        $toko_sales = Toko::all();
+        foreach ($toko_sales as $data) {
             $data->barcode = DNS1D::getBarcodeHTML($data->kode_toko, 'C39');
         }
 
-        return redirect()->route('daftar-toko-sales', compact('toko-sales'));
+        return redirect()->route('toko-sales', compact('toko_sales'));
     }
 
     public function stok_masuk_sales($id_toko)
@@ -182,14 +183,22 @@ class UserController extends Controller
     public function faktur_barang($kode_toko)
     {
         $sales = Auth::guard('sales')->user()->kode_sales;
+        
+        $barang = Toko::where('kode_toko', $kode_toko)->first();
 
         $faktur = Faktur::where('kode_sales', $sales)
             ->where('kode_toko', $kode_toko)
-            ->select('no_faktur_barang', DB::raw('SUM(stok_toko) as total_stok_toko'), DB::raw('SUM(total_harga) as total_harga'))
-            ->groupBy('no_faktur_barang','created_at')
+            ->select(
+                'created_at','updated_at',
+                'no_faktur_barang', 
+                DB::raw('SUM(stok_toko) as total_stok_toko'), 
+                DB::raw('SUM(total_harga) as total_harga'),
+                DB::raw('SUM(sisa_stok_toko) as total_sisa_stok_toko'))
+
+            ->groupBy('no_faktur_barang', 'created_at', 'updated_at')
             ->get();
 
-        return view('user.faktur-barang', compact('faktur'));
+        return view('user.faktur-barang', compact('faktur', 'barang'));
     }
 
     public function faktur_bayar($no_faktur_barang)
@@ -204,7 +213,43 @@ class UserController extends Controller
             ->where('no_faktur_barang', $no_faktur_barang)
             ->first();
 
-        return view('user.faktur-bayar', compact('faktur', 'no_faktur'));
+        $faktur_pembayaran = Faktur::where('kode_sales', $sales)
+            ->where('no_faktur_barang', $no_faktur_barang)
+            ->select(
+                'no_faktur_barang', 
+                DB::raw('SUM(stok_toko) as total_stok_toko'), 
+                DB::raw('SUM(total_harga) as total_harga'),
+                DB::raw('SUM(sisa_stok_toko) as total_sisa_stok_toko'))
+            ->groupBy('no_faktur_barang')
+            ->get();
+
+        return view('user.faktur-bayar', compact('faktur', 'no_faktur', 'faktur_pembayaran'));
+    }
+
+    public function detail_faktur($no_faktur_barang)
+    {
+        $sales = Auth::guard('sales')->user()->kode_sales;
+
+        $faktur = Faktur::where('kode_sales', $sales)
+            ->where('no_faktur_barang', $no_faktur_barang)
+            ->get();
+        
+        $no_faktur = Faktur::where('kode_sales', $sales)
+            ->where('no_faktur_barang', $no_faktur_barang)
+            ->first();
+
+        $faktur_bayar = Faktur::where('kode_sales', $sales)
+            ->where('no_faktur_barang', $no_faktur_barang)
+            ->select(
+                'created_at','updated_at',
+                'no_faktur_barang', 
+                DB::raw('SUM(stok_toko) as total_stok_toko'), 
+                DB::raw('SUM(total_harga) as total_harga'),
+                DB::raw('SUM(sisa_stok_toko) as total_sisa_stok_toko'))
+            ->groupBy('no_faktur_barang', 'created_at', 'updated_at')
+            ->get();
+
+        return view('user.detail-faktur-bayar', compact('faktur', 'no_faktur', 'faktur_bayar'));
     }
 
     public function saveTerjual(Request $request, $id_faktur)

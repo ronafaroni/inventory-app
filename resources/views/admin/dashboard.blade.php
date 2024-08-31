@@ -78,13 +78,13 @@
     <div class="page-header">
         <div class="content-page-header">
             <h5>Aktifitas Terkini</h5>
-            <div class="list-btn">
+            {{-- <div class="list-btn">
                 <ul class="filter-list">
                     <li>
                         <a class="btn btn-filters w-auto popup-toggle" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-original-title="Filter"><span class="me-2"><img src="assets/img/icons/filter-icon.svg" alt="filter"></span>Filter </a>
                     </li>
                 </ul>
-            </div>
+            </div> --}}
         </div>
     </div>
     <!-- /Page Header -->
@@ -107,39 +107,20 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @foreach ($kunjungan as $data)
                                 <tr>
-                                    <td>1</td>	
-                                    <td>ID257</td>													
-                                    <td>Budi Susanto</td>													
-                                    <td>Bekah Abadi</td>
-                                    <td>Pati, Jawa Tengah</td>
-                                    <td>20 Nov 2023, 04:12 PM</td>
+                                    <td>{{ $loop->iteration }}</td>	
+                                    <td>{{ $data->kode_sales }}</td>													
+                                    <td>{{ $data->nama_sales }}</td>													
+                                    <td>{{ $data->nama_toko }}</td>
+                                    <td>
+                                        <a href="https://www.google.com/maps?q={{ $data->latitude }},{{ $data->longitude }}" target="_blank">
+                                            {{ $data->latitude }}, {{ $data->longitude }}
+                                        </a>
+                                    </td>
+                                    <td>{{ $data->created_at }}</td>
                                 </tr>
-                                <tr>
-                                    <td>2</td>	
-                                    <td>ID276</td>													
-                                    <td>Agus Prayoga</td>													
-                                    <td>Lumintu</td>
-                                    <td>Jepara, Jawa Tengah</td>
-                                    <td>25 Jan 2023, 02:31 PM</td>
-                                </tr>
-                                <tr>
-                                    <td>3</td>	
-                                    <td>ID280</td>													
-                                    <td>Abdul Ghofur</td>													
-                                    <td>Amanah Jaya</td>
-                                    <td>Kudus, Jawa Tengah</td>
-                                    <td>21 Mar 2023, 03:45 PM</td>
-                                </tr>
-                                <tr>
-                                    <td>4</td>	
-                                    <td>ID296</td>													
-                                    <td>Satria Aji Prakoso</td>													
-                                    <td>Gumilang</td>
-                                    <td>Jepara, Jawa Tengah</td>
-                                    <td>21 Nov 2024, 05:15 PM</td>
-                                </tr>
-                            						
+                                @endforeach           						
                             </tbody>
                         </table>
                     </div>

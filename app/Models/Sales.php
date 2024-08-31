@@ -36,4 +36,20 @@ class Sales extends Model implements AuthenticatableContract
         return $this->hasMany(Toko::class, 'kode_sales', 'kode_sales');
     }
 
+    public function toko1()
+    {
+        return $this->belongsTo(Toko::class, 'kode_toko');
+    }
+
+    public function faktur1()
+    {
+        return $this->hasMany(Faktur::class, 'kode_toko', 'kode_toko');
+    }
+
+    public function kunjungan()
+    {
+        return $this->hasMany(Kunjungan::class, 'kode_sales', 'kode_sales');
+    }
+
+
 }

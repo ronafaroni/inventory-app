@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\StokSales;
 
 class Harga extends Model
 {
@@ -24,4 +25,11 @@ class Harga extends Model
     {
         return $this->belongsTo(Item::class, 'kode_item', 'kode_item');
     }
+
+    public function stok_sales()
+    {
+        return $this->belongsTo(stokSales::class, 'kode_item', 'kode_item');
+    }
+
+
 }

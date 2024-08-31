@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Auth;
 
 class Users
 {
@@ -15,6 +16,10 @@ class Users
      */
     public function handle(Request $request, Closure $next): Response
     {
-        return $next($request);
+        if (Auth::guard('sales')->check() && Auth::guard('sales')->user()->role === 'sales') {
+            return $next($request);
+        }
+
+        return redirect('/login-sales');
     }
 }

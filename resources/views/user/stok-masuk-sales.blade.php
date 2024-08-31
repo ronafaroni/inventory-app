@@ -2,11 +2,6 @@
 
 @section('content-user')
 <div class="signature-invoice">
-    <div class="page-header">
-        <div class="content-page-header">
-            <h5>Tambah Stok Toko</h5>
-        </div>
-    </div>
     <div class="row">
         <div class="col-md-12">
             <div class="edit-card">
@@ -31,7 +26,7 @@
                     <div class="form-group-item border-0 mb-0">
                         <div class="row align-item-center">
                             <div class="col-lg-12 col-md-6 col-sm-12">
-                                
+                                <h5>Tambah Stok Toko</h5>
                                 <form id="dataForm">
 
                                     <div class="input-block mb-3 row">
@@ -118,7 +113,25 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group-item">
+
+                    <table class="table table-center table-hover datatable" id="dataTable">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Nama Item</th>
+                                <th>Harga</th>
+                                <th class="no-sort">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Rows will be added here dynamically -->
+                        </tbody>
+
+                    </table>
+
+
+
+                    {{-- <div class="form-group-item">
                         <div class="card-table">
                             <div class="card-body">
                                 <div class="table-responsive">
@@ -142,7 +155,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
                     <div class="preview-boxs">
                         <p>Total tambah stok: <span id="totalStok">0</span> pcs</p>
                         <form method="POST" action="{{ route('simpan-faktur-barang') }}" id="saveForm" class="add-customer-btns text-end">
@@ -229,14 +242,13 @@
                 const newRow = `
                     <tr>
                         <td>${index + 1}</td>
-                        <td>${data.kodeItem}</td>
-                        <td>${data.namaItem}</td>
-                        <td>${data.stok}</td>
-                        <td>${parseFloat(data.harga)}</td>
-                        <td>${data.diskon}</td>
+                        <td>${data.namaItem}<br>
+                        Stok (pcs) : ${data.stok}<br>
+                        Harga (Rp.) : ${parseFloat(data.harga)}<br>
+                        Diskon (%) : ${data.diskon}</td>
                         <td>${parseFloat(data.totalHarga)}</td>
                         <td class="d-flex">
-                            <button type="button" class="btn btn-danger btn-sm removeRow" data-index="${index}"><i class="fa fa-trash"></i></button>
+                            <button type="button" class="btn btn-import btn-sm removeRow" data-index="${index}"><i class="fa fa-trash"></i></button>
                         </td>
                     </tr>
                 `;

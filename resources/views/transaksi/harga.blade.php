@@ -7,7 +7,7 @@
             <h5>Harga & Diskon</h5>
             <div class="list-btn">
                 <ul class="filter-list">
-                    <li>
+                    {{-- <li>
                         <div class="dropdown dropdown-action" data-bs-toggle="tooltip" data-bs-placement="top" title="Download">
                             <a href="#" class="btn-filters" data-bs-toggle="dropdown" aria-expanded="false"><span><i class="fe fe-download"></i></span></a>
                             <div class="dropdown-menu dropdown-menu-end">
@@ -24,7 +24,7 @@
                     </li>
                     <li>
                         <a class="btn-filters" href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Print"><span><i class="fe fe-printer"></i></span> </a>
-                    </li>
+                    </li> --}}
                     <li>
                         <a class="btn btn-primary" href="{{ route('tambah-harga') }}"><i class="fa fa-dollar me-2" aria-hidden="true"></i>Tambah Harga & Diskon</a>
                     </li>
@@ -60,6 +60,7 @@
                                 <tr>
                                     <th>#</th>
                                     <th>Kode Item</th>
+                                    <th>Nama Item</th>
                                     <th>Harga Satuan/Pcs</th>
                                     <th>Diskon (%)</th>
                                     <th>Harga Diskon (Rp.)</th>
@@ -73,8 +74,13 @@
 
                                 @foreach ($harga as $data)
                                 <tr>
-                                    <td>{{ $no++ }}</td>
+                                    <td>{{ $no++ }}</td> 
                                     <td>{{ $data->kode_item }}</td>
+                                    <td>
+                                        <h2 class="table-avatar">
+                                            <a href="{{ route('edit-harga', $data->id_harga) }}">{{ $data->item->nama_item }}</a>
+                                        </h2>
+                                    </td>
                                     <td>{{ 'Rp. '.number_format($data->harga) }}</td>
                                     <td>{{ $data->diskon }} %</td>
                                     <td>{{ 'Rp. '.number_format($data->harga_diskon) }}</td>

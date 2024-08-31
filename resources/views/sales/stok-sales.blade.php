@@ -7,7 +7,7 @@
                 <h5>Stok Sales</h5>
                 <div class="list-btn">
                     <ul class="filter-list">
-                        <li class="">
+                        {{-- <li class="">
                             <div class="dropdown dropdown-action" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-original-title="download">
                                 <a href="#" class="btn-filters" data-bs-toggle="dropdown" aria-expanded="false"><span><i class="fe fe-download"></i></span></a>
                                 <div class="dropdown-menu dropdown-menu-right">
@@ -24,7 +24,7 @@
                         </li>
                         <li>
                             <a class="btn-filters" href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-original-title="print"><span><i class="fe fe-printer"></i></span> </a>
-                        </li>
+                        </li> --}}
                         <li>
                             <a class="btn btn-primary" href="{{ route('tambah-sales') }}"><i class="fa fa-user-plus me-2" aria-hidden="true"></i>Tambah Sales</a>
                         </li>
@@ -84,7 +84,11 @@
                                     <tr>
                                         <td>{{ $no++ }}</td>
                                         <td>{{ $data->kode_sales }}</td>
-                                        <td>{{ $data->nama_sales }}</td>
+                                        <td>
+                                            <h2 class="table-avatar">
+                                                <a href="{{ route('detail-sales', $data->kode_sales) }}">{{ $data->nama_sales }}</a>
+                                            </h2>
+                                        </td>
                                         <td>{{ number_format($data->stokSales->sum('stok_sales') - $data->faktur->sum('stok_toko')) }}</td>
                                         <td>{{ number_format($data->faktur->sum('stok_toko') - $data->faktur->sum('stok_terjual')) }}</td>
                                         <td>{{ number_format($data->faktur->sum('stok_terjual')) }}</td>

@@ -7,7 +7,7 @@
             <h5>Daftar Toko</h5>
             <div class="list-btn">
                 <ul class="filter-list">
-                    <li>
+                    {{-- <li>
                         <div class="dropdown dropdown-action" data-bs-toggle="tooltip" data-bs-placement="top" title="Download">
                             <a href="#" class="btn-filters" data-bs-toggle="dropdown" aria-expanded="false"><span><i class="fe fe-download"></i></span></a>
                             <div class="dropdown-menu dropdown-menu-end">
@@ -24,7 +24,7 @@
                     </li>
                     <li>
                         <a class="btn-filters" href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Print"><span><i class="fe fe-printer"></i></span> </a>
-                    </li>
+                    </li> --}}
                     <li>
                         <a class="btn btn-primary" href="{{ route('tambah-toko') }}"><i class="fa fa-plus-circle me-2" aria-hidden="true"></i>Tambah Toko</a>
                     </li>
@@ -58,14 +58,15 @@
                         <table class="table table-center table-hover datatable">
                             <thead class="thead-light">
                                 <tr>
-                                    <th>#</th>
+                                    <th>#</th> 
                                     <th>Kode Toko</th>
                                     <th>Nama Toko</th>
                                     <th>Stok (pcs)</th>
                                     <th>Jual (pcs)</th>
                                     <th>Return (pcs)</th>
                                     <th>Nama Sales</th>
-                                    <th>Kunjungan</th>
+                                    <th>Kunjungan / Minggu ini</th>
+                                    <th>Pencapaian</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -80,23 +81,46 @@
                                     <td>{{ $data->kode_toko }}</td>
                                     <td>
                                         <h2 class="table-avatar">
-                                            <a href="{{ route('edit-toko', $data->id_toko) }}">{{ $data->nama_toko }}</a>
+                                            {{-- <a href="{{ route('edit-toko', $data->id_toko) }}">{{ $data->nama_toko }}</a> --}}
+                                            <a href="{{ route('detail-toko', $data->kode_toko) }}">{{ $data->nama_toko }}</a>
                                         </h2>
                                     </td>
                                     <td>{{ number_format($data->faktur->sum('stok_toko') - $data->faktur->sum('stok_terjual'), 0, ',', '.') }}</td>
                                     <td>{{ number_format($data->faktur->sum('stok_terjual'), 0, ',', '.') }}</td>
                                     <td>{{ number_format($data->faktur->sum('stok_return'), 0, ',', '.') }}</td>
                                     <td>{{ $data->sales ? $data->sales->nama_sales : '-' }}</td>
-                                    <td>4</td>
+                                    @php
+                                        $kunjunganPerMinggu = $data->kunjungan->filter(function ($kunjungan) {
+                                            return \Carbon\Carbon::parse($kunjungan->created_at)->isSameWeek(\Carbon\Carbon::now());
+                                        })->count();
+                                    @endphp
+
+                                    <td>{{ $data->kunjungan->count() }} / {{ $kunjunganPerMinggu }}</td>
+
+                                    <td>
+                                        @if ($data->pencapaian > 0 && $data->pencapaian == '' && $data->pencapaian == null)
+                                            <i class="fa fa-star"></i>
+                                        @elseif ($data->pencapaian == '1')
+                                            <i class="fa fa-star"></i>
+                                        @elseif ($data->pencapaian == '2')
+                                            <i class="fa fa-star"></i> <i class="fa fa-star"></i>
+                                        @elseif ($data->pencapaian == '3')
+                                            <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i>
+                                        @elseif ($data->pencapaian == '4')
+                                            <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i>
+                                        @elseif ($data->pencapaian == '5')
+                                            <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i>
+                                        @endif
+                                    </td>
                                     <td class="d-flex">
                                         <form action="{{ route('delete-toko', $data->id_toko) }}" method="POST">
-                                            @csrf
+                                            @csrf 
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-import m-2" onclick="return confirm('Apakah anda yakin ingin menghapus data toko ?')">
                                                 <span><i class="fa fa-trash-alt"></i></span>
                                             </button>
-                                        </form>
-                                        <form action="{{ route('download-barcode', $data->kode_toko) }}" method="GET">
+                                        </form> 
+                                        <form action="{{ route('download-barcode', $data->id_toko) }}" method="GET">
                                             @csrf
                                             <button type="submit" class="btn btn-import m-2">
                                                 <span><i class="fa fa-download"></i> Barcode</span>

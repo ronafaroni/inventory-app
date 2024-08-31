@@ -6,7 +6,7 @@
         <div class="content-page-header">
             <h5>Daftar Riwayat Stok</h5>
             <div class="list-btn">
-                <ul class="filter-list">
+                {{-- <ul class="filter-list">
                     <li>
                         <div class="dropdown dropdown-action" data-bs-toggle="tooltip" data-bs-placement="top" title="Download">
                             <a href="#" class="btn-filters" data-bs-toggle="dropdown" aria-expanded="false"><span><i class="fe fe-download"></i></span></a>
@@ -24,7 +24,7 @@
                     </li>
                     <li>
                         <a class="btn-filters" href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Print"><span><i class="fe fe-printer"></i></span> </a>
-                    </li>
+                    </li> --}}
                     <li>
                         <a class="btn btn-primary" href="{{ route('tambah-stok')}}"><i class="fa fa-plus-circle me-2" aria-hidden="true"></i>Tambah Stok</a>
                     </li>

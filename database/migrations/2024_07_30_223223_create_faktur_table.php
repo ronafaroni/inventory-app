@@ -28,6 +28,7 @@ return new class extends Migration
             $table->string('stok_return')->nullable();
             $table->string('sisa_stok_toko')->nullable();
             $table->string('total_bayar')->nullable();
+            $table->string('setor_gudang')->nullable();
             $table->string('status')->nullable();
             $table->timestamps();
         });

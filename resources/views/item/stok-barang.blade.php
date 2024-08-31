@@ -7,7 +7,7 @@
             <h5>Stok Barang</h5>
             <div class="list-btn">
                 <ul class="filter-list">
-                    <li>
+                    {{-- <li>
                         <div class="dropdown dropdown-action" data-bs-toggle="tooltip" data-bs-placement="top" title="Download">
                             <a href="#" class="btn-filters" data-bs-toggle="dropdown" aria-expanded="false"><span><i class="fe fe-download"></i></span></a>
                             <div class="dropdown-menu dropdown-menu-end">
@@ -24,7 +24,7 @@
                     </li>
                     <li>
                         <a class="btn-filters" href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Print"><span><i class="fe fe-printer"></i></span> </a>
-                    </li>
+                    </li> --}}
                     <li>
                         <a href="{{ route('tambah-item') }}" class="btn btn-import" href="javascript:void(0);"><span><i class="fe fe-box me-2"></i>Tambah Item</span></a>
                     </li>

@@ -64,14 +64,14 @@
                                             @enderror
                                         </div>
                                     </div>
-
                                     <div class="input-block mb-3 row">
-                                        <label class="col-form-label col-md-2">Link Gmap Toko</label>
+                                        <label class="col-form-label col-md-2">Lokasi di Google Maps</label>
                                         <div class="col-md-10">
-                                            <input type="link" name="link_gmap" class="form-control" placeholder="Link Gmap Toko" value="{{ old('link_gmap') }}">
-                                            @error('link_gmap')
-                                                <div class="text-danger">{{ $message }}</div>
-                                            @enderror
+                                            @if ($toko->link_gmap)
+                                                <a href="{{ $toko->link_gmap }}" target="_blank" class="btn btn-primary">Lihat Lokasi</a>
+                                            @else
+                                                <span>Tautan Google Maps tidak tersedia.</span>
+                                            @endif
                                         </div>
                                     </div>
 

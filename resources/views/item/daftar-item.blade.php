@@ -8,7 +8,7 @@
             <h5>Item Barang</h5>
             <div class="list-btn">
                 <ul class="filter-list">
-                    <li>
+                    {{-- <li>
                         <div class="dropdown dropdown-action" data-bs-toggle="tooltip" data-bs-placement="top" title="Download">
                             <a href="#" class="btn-filters" data-bs-toggle="dropdown" aria-expanded="false"><span><i class="fe fe-download"></i></span></a>
                             <div class="dropdown-menu dropdown-menu-end">
@@ -22,10 +22,10 @@
                                 </ul>
                             </div>
                         </div>														
-                    </li>
-                    <li>
+                    </li> --}}
+                    {{-- <li>
                         <a class="btn-filters" href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Print"><span><i class="fe fe-printer"></i></span> </a>
-                    </li>
+                    </li> --}}
                     <li>
                         <a class="btn btn-import" href="{{ route('tambah-item') }}"><span><i class="fe fe-box me-2"></i>Tambah Item</span></a>
                     </li>

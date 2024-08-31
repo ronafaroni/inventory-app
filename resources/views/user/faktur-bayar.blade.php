@@ -5,26 +5,57 @@
     <div class="page-header">
         <div class="content-page-header">
             <h5>Faktur Barang</h5>
+            <div class="list-btn">
+                <a class="btn btn-import" href="{{ route('detail-faktur', $no_faktur->no_faktur_barang) }}"><span><i class="fe fe-plus me-2"></i>Buat Faktur Pembayaran</span></a>
+                <a href="{{ route('toko-sales') }}" class="btn btn-primary"><span><i class="fe fe-printer me-2"></i>Cetak Faktur Barang</span"></a>
+            </div>
         </div>
     </div>
     <!-- /Page Header -->
+
+    @foreach ($faktur_pembayaran as $item)
+        <div class="card mb-3">
+            
+                <div class="card-body">
+                    <p class="card-title">Faktur Setor Barang</p>
+                    <h5 class="card-title">{{ $item->no_faktur_barang }}</h5>
+                    <hr>
+                    <table>
+                        <tr>
+                            <td>
+                                <p class="card-text">Stok (pcs): {{ $item->total_stok_toko ?? 0 }}</p>
+                            </td>
+                            <td>
+                                <p class="card-text">Sisa (pcs): {{  $item->total_stok_toko - $item->total_sisa_stok_toko ?? 0 }}</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p class="card-text">Total Harga: {{ number_format($item->total_harga) ?? $item->total_harga ?? 0 }}</p>
+                            </td>
+                            <td>
+                                <p class="card-text">Total Pembayaran: {{ $item->setor_gudang ?? 0 }}</p>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+    
+    </div>
+
+    @endforeach
+
 
     <div class="row">
         <div class="col-sm-12">
             <div class="card-table">
                 <div class="card-body">
-                    <div id="alertContainer"></div>
-                    
-                    <div class="table-responsive">
                         <table class="table table-center table-hover datatable">
                             <thead class="thead-light">
                                 <tr>
                                     <th>#</th>
-                                    <th>Kode Item</th>
                                     <th>Nama Item</th>
-                                    <th>Jumlah Stok</th>
                                     <th>Total Harga</th>
-                                    <th class="no-sort">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -34,28 +65,52 @@
                                 @foreach ($faktur as $item)
                                     <tr>
                                         <td>{{ $no++ }}</td>
-                                        <td>{{ $item->kode_item }}</td>
-                                        <td>{{ $item->nama_item }}</td>
-                                        <td>{{ $item->stok_toko }}</td>
-                                        <td>{{ number_format($item->total_harga, 0, ',', '.') }}</td>
-                                        <td class="d-flex align-items-center">
-                                            <button class="btn btn-greys bg-history-light me-2" data-toggle="modal" data-target="#terjualModal{{ $item->id_faktur }}">
-                                                <i class="fa fa-cart-plus me-1"></i> Terjual
-                                            </button> 
-                                            <button class="btn btn-greys bg-success-light me-2" data-toggle="modal" data-target="#returnModal{{ $item->id_faktur }}">
-                                                <i class="fa fa-exclamation-triangle me-1"></i> Return
-                                            </button>
-                                        </td>
+                                        <td><b>{{ $item->nama_item }}</b><br>
+                                        Stok (pcs) : {{ $item->stok_toko }}<br>
+                                        Harga (Rp.) : {{ number_format($item->harga, 0, ',', '.') }}<br>
+                                        Diskon : {{ $item->diskon }} %<br></td>
+                                        <td><b>Rp. {{ number_format($item->total_harga, 0, ',', '.') }}</b></td>
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
-                    </div>
+                    
                 </div>
             </div>
         </div>
     </div>
 
+    
+    @foreach ($faktur_pembayaran as $item)
+        @if ($item->no_faktur_bayar > 0) 
+            <div class="card mb-3">
+                    <div class="card-body">
+                        <p class="card-title">Faktur Setor Barang</p>
+                        <h5 class="card-title">{{ $item->no_faktur_barang }}</h5>
+                        <hr>
+                        <table>
+                            <tr>
+                                <td>
+                                    <p class="card-text">Stok (pcs): {{ $item->total_stok_toko ?? 0 }}</p>
+                                </td>
+                                <td>
+                                    <p class="card-text">Sisa (pcs): {{  $item->total_stok_toko - $item->total_sisa_stok_toko ?? 0 }}</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <p class="card-text">Total Harga: {{ number_format($item->total_harga) ?? $item->total_harga ?? 0 }}</p>
+                                </td>
+                                <td>
+                                    <p class="card-text">Total Pembayaran: {{ $item->setor_gudang ?? 0 }}</p>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        @endif
+    @endforeach
 
     @foreach ($faktur as $item)
     <!-- Terjual Modal -->
@@ -91,7 +146,7 @@
     @endforeach
 
     @foreach ($faktur as $item)
-        
+         
     <!-- Return Modal -->
     <div class="modal fade" id="returnModal{{ $item->id_faktur }}" tabindex="-1" aria-labelledby="returnModalLabel" aria-hidden="true">
         <div class="modal-dialog">

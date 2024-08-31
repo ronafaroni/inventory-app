@@ -80,7 +80,7 @@
                                         <div class="col-md-10">
 
                                             <select name="kode_sales" id="kode_sales" class="form-control form-small">
-                                                <option value="{{$toko->kode_sales}}"> {{$toko->kode_sales}} | {{ $toko->nama_sales }}</option>
+                                                <option value="{{$toko->kode_sales}}"> Masukkan Nama Sales</option>
                                                 @foreach ($data_sales as $item)
                                                     <option value="{{ $item->kode_sales }}" data-nama="{{ $item->nama_sales }}">{{ $item->kode_sales }} | {{ $item->nama_sales }}</option>
                                                 @endforeach
@@ -94,7 +94,7 @@
                                         <label class="col-form-label col-md-2">Upload Gambar</label>
                                         <div class="col-md-10">
                                             <div class="input-block service-upload mb-0">
-                                                <span><img src="assets/img/icons/drop-icon.svg" alt="upload"></span>
+                                                {{-- <span><img src="assets/img/icons/drop-icon.svg" alt="upload"></span> --}}
                                                 <h6 class="drop-browse align-center">Drop your files here or<span class="text-primary ms-1">browse</span></h6>
                                                 <p class="text-muted">Maximum size: 5MB</p>	
                                                 <input type="file" name="gambar_toko" multiple="" id="image_sign" @error('gambar_toko') is-invalid @enderror>

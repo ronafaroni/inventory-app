@@ -10,6 +10,11 @@ use App\Models\Sales;
 
 class LoginController extends Controller
 {
+    public function index()
+    {
+        return view('login.index');
+    }
+
     public function form_login()
     {
         return view('login.index');
@@ -80,7 +85,7 @@ class LoginController extends Controller
                 $request->session()->regenerate();
                 Log::info('User logged in successfully');
 
-                return redirect()->intended('/users');
+                return redirect()->intended('/app-toko-sales');
             } else {
                 Log::warning('Password check failed', ['username' => $credentials['username']]);
             }
@@ -98,7 +103,7 @@ class LoginController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/login');
+        return redirect('/');
     }
 
     public function logout_user(Request $request)

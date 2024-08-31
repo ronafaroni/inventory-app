@@ -26,7 +26,7 @@
                                     </div>
 
                                     <div class="input-block mb-3 row">
-                                        <label class="col-form-label col-md-2">Nama Toko</label>
+                                        <label class="col-form-label col-md-2">Nama Toko <span class="text-danger">*</span></label>
                                         <div class="col-md-10">
                                             <input type="text" name="nama_toko" class="form-control" placeholder="Nama Toko" value="{{ old('nama_toko') }}">
                                             @error('nama_toko')
@@ -36,7 +36,7 @@
                                     </div>
 
                                     <div class="input-block mb-3 row">
-                                        <label class="col-form-label col-md-2">Pemilik Toko</label>
+                                        <label class="col-form-label col-md-2">Pemilik Toko <span class="text-danger">*</span></label>
                                         <div class="col-md-10">
                                             <input type="text" name="pemilik_toko" class="form-control" placeholder="Nama Pemilik Toko" value="{{ old('pemilik_toko') }}">
                                             @error('pemilik_toko')
@@ -46,7 +46,7 @@
                                     </div>
 
                                     <div class="input-block mb-3 row">
-                                        <label class="col-form-label col-md-2">Alamat</label>
+                                        <label class="col-form-label col-md-2">Alamat <span class="text-danger">*</span></label>
                                         <div class="col-md-10">
                                             <input type="text" name="alamat" class="form-control" placeholder="Alamat Toko" value="{{ old('alamat') }}">
                                             @error('alamat')
@@ -56,7 +56,7 @@
                                     </div>
 
                                     <div class="input-block mb-3 row">
-                                        <label class="col-form-label col-md-2">No. Telp</label>
+                                        <label class="col-form-label col-md-2">No. Telp <span class="text-danger">*</span></label>
                                         <div class="col-md-10">
                                             <input type="number" name="no_telp" class="form-control" placeholder="No. Telp" value="{{ old('no_telp') }}">
                                             @error('no_telp')
@@ -66,7 +66,7 @@
                                     </div>
 
                                     <div class="input-block mb-3 row">
-                                        <label class="col-form-label col-md-2">Link Gmap Toko</label>
+                                        <label class="col-form-label col-md-2">Link Gmap Toko <span class="text-danger">*</span></label>
                                         <div class="col-md-10">
                                             <input type="link" name="link_gmap" class="form-control" placeholder="Link Gmap Toko" value="{{ old('link_gmap') }}">
                                             @error('link_gmap')
@@ -76,7 +76,7 @@
                                     </div>
 
                                     <div class="input-block mb-3 row">
-                                        <label class="col-form-label col-md-2">Upload Gambar</label>
+                                        <label class="col-form-label col-md-2">Upload Gambar <span class="text-danger">*</span></label>
                                         <div class="col-md-10">
                                             <div class="input-block service-upload mb-0">
                                                 <span><img src="assets/img/icons/drop-icon.svg" alt="upload"></span>
