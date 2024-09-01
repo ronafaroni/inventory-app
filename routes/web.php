@@ -14,6 +14,7 @@ use App\Http\Controllers\AppController;
 use App\Http\Controllers\KunjunganController;
 use App\Models\Kunjungan;
 use App\Models\Toko;
+use App\Http\Middleware\RedirectIfNotSales;
 
 // Route::get('/', function () {
 //     return view('login');
@@ -58,6 +59,8 @@ Route::post('/update-sales/{id_sales}', [SalesController::class, 'update_sales']
 Route::delete('/delete-sales/{id_sales}', [SalesController::class, 'delete_sales'])->name('delete-sales')->middleware(['auth', 'admin']);
 Route::get('/detail-sales/{id_sales}', [SalesController::class, 'detail_sales'])->name('detail-sales')->middleware(['auth', 'admin']);
 Route::post('/update-pencapaian-sales/{id_sales}', [SalesController::class, 'update_pencapaian_sales'])->name('update-pencapaian-sales')->middleware(['auth', 'admin']);
+Route::get('/pencarian-target-sales', [SalesController::class, 'pencarian_target_sales'])->name('pencarian-target-sales')->middleware(['auth', 'admin']);
+
 
 Route::get('/daftar-sales', [SalesController::class, 'daftar_sales'])->name('daftar-sales')->middleware(['auth', 'admin']);
 Route::get('/stok-sales', [SalesController::class, 'stok_sales'])->name('stok-sales')->middleware(['auth', 'admin']);
@@ -106,8 +109,11 @@ Route::get('/users', [UserController::class, 'users'])->name('users');
 Route::get('/profile', [UserController::class, 'profile'])->name('profile');
 Route::get('/kunjungan', [UserController::class, 'kunjungan'])->name('kunjungan');
 
-//ini tampilan toko pada sales
-Route::get('/toko-sales', [UserController::class, 'toko_sales'])->name('toko-sales')->middleware(['auth','sales']);
+Route::middleware(['auth', 'sales'])->group(function () {
+    Route::get('/toko-sales', [UserController::class, 'toko_sales'])->name('toko-sales');
+});
+
+// Route::get('/toko-sales', [UserController::class, 'toko_sales'])->name('toko-sales')->middleware(['auth','sales']);
 Route::get('/tambah-toko-sales', [UserController::class, 'tambah_toko_sales'])->name('tambah-toko-sales');
 Route::post('/simpan-toko-sales', [UserController::class, 'simpan_toko_sales'])->name('simpan-toko-sales');
 Route::get('/stok-keluar-sales', [UserController::class, 'stok_keluar_sales'])->name('stok-keluar-sales');
