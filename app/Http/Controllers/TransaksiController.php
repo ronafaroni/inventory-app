@@ -6,7 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\Harga;
 use App\Models\Item;
 use App\Models\Faktur;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\DB; 
+use App\Exports\PenjualanExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class TransaksiController extends Controller
 {
@@ -140,5 +142,29 @@ class TransaksiController extends Controller
         $request->session()->flash('update', 'Data faktur bayar berhasil di update.');
         return view('transaksi.faktur-pembayaran');
     }
+
+    public function report_penjualan()
+    {
+        // Ambil data faktur dengan relasi yang dibutuhkan
+        $faktur_bayar = Faktur::with(['sales.toko', 'item']) // Pastikan 'item' adalah relasi untuk barang
+            ->select(
+                'kode_sales', // Asumsi kode_sales ada di tabel faktur
+                'kode_toko',  // Asumsi kode_toko ada di tabel faktur
+                'kode_item',  // ID Barang dari tabel faktur
+                DB::raw('SUM(stok_terjual) as total_terjual'), // Total jumlah barang terjual
+                DB::raw('SUM(total_bayar) as total_bayar') // Total nominal terjual
+            )
+            ->groupBy('kode_sales', 'kode_toko', 'kode_item')
+            ->get();
+    
+        // Return ke view dengan data yang telah diproses
+        return view('transaksi.report-penjualan', compact('faktur_bayar'));
+    }
+
+    public function exportPenjualan()
+{
+    return Excel::download(new PenjualanExport, 'report_penjualan.xlsx');
+}
+    
 
 }

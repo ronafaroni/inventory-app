@@ -167,6 +167,7 @@
 									<li><a href="{{ route('harga') }}" class="{{ request()->routeIs('harga') ? 'active' : '' }}">Harga & Diskon</a></li>
 									<li><a href="{{ route('faktur-terima-barang') }}" class="{{ request()->routeIs('faktur-terima-barang') ? 'active' : '' }}">Faktur Terima Barang</a></li>
 									<li><a href="{{ route('faktur-pembayaran') }}" class="{{ request()->routeIs('faktur-pembayaran') ? 'active' : '' }}">Faktur Pembayaran</a></li>
+									<li><a href="{{ route('report-penjualan') }}" class="{{ request()->routeIs('report-penjualan') ? 'active' : '' }}">Report Penjualan</a></li>
 								</ul>
 							</li>
 
@@ -213,6 +214,7 @@
 									<li><a href="{{ route('harga') }}" class="{{ request()->routeIs('harga') ? 'active' : '' }}">Harga & Diskon</a></li>
 									<li><a href="{{ route('faktur-terima-barang') }}" class="{{ request()->routeIs('faktur-terima-barang') ? 'active' : '' }}">Faktur Terima Barang</a></li>
 									<li><a href="{{ route('faktur-pembayaran') }}" class="{{ request()->routeIs('faktur-pembayaran') ? 'active' : '' }}">Faktur Pembayaran</a></li>
+									<li><a href="{{ route('report-penjualan') }}" class="{{ request()->routeIs('report-penjualan') ? 'active' : '' }}">Report Penjualan</a></li>
 								</ul>
 							</li>
 							<li class="menu-title"><span>Settings</span></li>							

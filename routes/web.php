@@ -103,6 +103,9 @@ Route::get('/detail-faktur-barang/{no_faktur_barang}', [TransaksiController::cla
 Route::get('/detail-faktur-bayar/{no_faktur_bayar}', [TransaksiController::class, 'detail_faktur_bayar'])->name('detail-faktur-bayar')->middleware(['auth', 'admin']);
 Route::post('/update-faktur-bayar/{id_faktur}', [TransaksiController::class, 'update_faktur_bayar'])->name('update-faktur-bayar')->middleware(['auth', 'admin']);
 
+Route::get('/report-penjualan', [TransaksiController::class, 'report_penjualan'])->name('report-penjualan')->middleware(['auth', 'admin']);
+Route::get('/export-penjualan', [TransaksiController::class, 'exportPenjualan'])->name('export-penjualan');
+
 
 //untuk tampilan user
 Route::get('/users', [UserController::class, 'users'])->name('users');
