@@ -123,15 +123,16 @@ class AppController extends Controller
     public function app_simpan_toko(Request $request)
     {
         $request->validate([
-            'kode_toko' => 'required',
+            'kode_toko' => 'required|unique:toko,kode_toko',
             'nama_toko' => 'required',
             'pemilik_toko' => 'required',
             'no_telp' => 'required',
             'alamat' => 'required',
             'link_gmap' => 'required',
-            'gambar' => 'required',
+            'gambar' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ],
         [
+            'kode_toko.unique' => 'Kode Toko sudah ada.',
             'kode_toko.required' => 'Kode Toko harus diisi.',
             'nama_toko.required' => 'Nama harus diisi.',
             'pemilik_toko.required' => 'Pemilik Toko harus diisi.',
@@ -140,6 +141,9 @@ class AppController extends Controller
             'link_gmap.required' => 'Link Google Maps harus diisi.',
             'kode_sales.required' => 'Kode Sales harus diisi.',
             'gambar.required' => 'Gambar Toko harus diisi.',
+            'gambar.image' => 'File harus berupa gambar.',
+            'gambar.mimes' => 'File harus berupa jpeg, png, jpg.',
+            'gambar.max' => 'File tidak boleh lebih dari 2 MB.',
         ]);
 
         //Membuat barcode
