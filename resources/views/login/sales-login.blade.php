@@ -15,7 +15,7 @@
     <script src="assets/js/layout.js"></script>
 </head>
 <body>
-
+ 
 <div class="main-wrapper">
     <div class="row m-0 align-items-center bg-white vh-100">
         <div class="col-lg">
@@ -31,28 +31,27 @@
                                 <div class="login-heading">
                                     <h3>Login Sales</h3>
                                 </div>
+                                @if($errors->any())
+                                    <div id="auto-hide-alert" class="alert alert-danger alert-dismissible fade show" role="alert">
+                                        @foreach ($errors->all() as $error)
+                                            <p>{{ $error }}</p>
+                                        @endforeach
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                @endif
+                            
                                 <div class="input-block mb-3">
                                     <label class="form-label">Username</label>
                                     <input type="text" name="username" id="username" class="form-control" placeholder="Masukkan Username Anda" autocomplete="off" value="{{ old('username') }}">
-                                    @error('username')
-                                    <div class="text-danger">
-                                        {{ $message }} 
-                                    </div>
-                                    @enderror
                                 </div>
                                 <div class="input-block mb-3">
                                     <label class="form-control-label">Password</label>
                                     <div class="pass-group">
                                         <input type="password" name="password" id="password" class="form-control pass-input" placeholder="Masukkan Password Anda" autocomplete="off" value="{{ old('password') }}">
                                         <span class="fas fa-eye-slash toggle-password"></span>
-                                        @error('password')
-                                        <div class="text-danger">
-                                            {{ $message }}
-                                        </div>
-                                        @enderror
                                     </div>
-                                </div>
-                                <div class="input-block mb-0">
+                                </div><br>
+                                {{-- <div class="input-block mb-0">
                                     <div class="row">
                                         <div class="col-sm-6">
                                             <div class="form-check custom-checkbox mb-3">
@@ -64,7 +63,7 @@
                                             <a class="forgot-link" href="#">Forgot Your Password?</a>
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
                                 <button type="submit" class="btn btn-primary">Login</button>
                             </div>
                         </div>
@@ -74,6 +73,29 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        // Set waktu dalam milidetik (misalnya, 5000 ms = 5 detik)
+        const autoHideDuration = 5000; 
+
+        // Temukan elemen dengan ID yang ditentukan
+        const alertElement = document.getElementById('auto-hide-alert');
+
+        if (alertElement) {
+            // Set timeout untuk menghapus elemen setelah durasi
+            setTimeout(() => {
+                alertElement.style.transition = 'opacity 0.1s ease-out'; // Set durasi transisi
+                alertElement.style.opacity = '0'; // Hilangkan alert dengan mengatur opacity ke 0
+                
+                // Tunggu hingga transisi selesai sebelum menghapus elemen
+                setTimeout(() => {
+                    alertElement.remove(); // Menghapus elemen dari DOM
+                }, 100); // Durasi transisi, sesuaikan jika perlu
+            }, autoHideDuration);
+        }
+    });
+</script>
 
 <script src="assets/js/jquery-3.7.1.min.js"></script>
 <script src="assets/js/bootstrap.bundle.min.js"></script>

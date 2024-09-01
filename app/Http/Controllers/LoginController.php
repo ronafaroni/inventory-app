@@ -27,27 +27,26 @@ class LoginController extends Controller
 
     public function authenticate(Request $request)
     {
-        $credentials = $request->validate([
-            'username' => ['required'],
-            'password' => ['required'],
-        ]);
+         // Validasi manual untuk mengatasi berbagai kondisi
+        $messages = [];
+        if (!$request->filled('username') && !$request->filled('password')) {
+            $messages['login_error'] = 'Username dan Password tidak terisi.';
+        } elseif (!$request->filled('username')) {
+            $messages['login_error'] = 'Username tidak boleh kosong.';
+        } elseif (!$request->filled('password')) {
+            $messages['login_error'] = 'Password tidak boleh kosong.';
+        }
 
-        $user = \App\Models\User::where('username', $credentials['username'])->first();
+        if (!empty($messages)) {
+            return redirect()->back()->withErrors($messages);
+        }       
 
-        if ($user && Hash::check($credentials['password'], $user->password)) {
-            if (Hash::needsRehash($user->password)) {
-                $user->password = Hash::make($credentials['password']);
-                $user->save();
-            }
+        // Jika validasi berhasil, lanjutkan dengan autentikasi
+        $credentials = $request->only('username', 'password');
 
-            Auth::login($user);
+        if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-
-            if ($user->role == 'admin') {
-                return redirect()->intended('/dashboard');
-            } else {
-                return redirect()->intended('/users');
-            }
+            return redirect()->intended('/dashboard');
         }
 
         return back()->withErrors([
@@ -55,42 +54,28 @@ class LoginController extends Controller
         ]);
     }
 
-    public function authenticate_user(Request $request)
+        public function authenticate_user(Request $request)
     {
-        // Logging for debugging
-        Log::info('Starting authentication process');
+        // Validasi manual untuk mengatasi berbagai kondisi
+        $messages = [];
+        if (!$request->filled('username') && !$request->filled('password')) {
+            $messages['login_error'] = 'Username dan Password tidak terisi.';
+        } elseif (!$request->filled('username')) {
+            $messages['login_error'] = 'Username tidak boleh kosong.';
+        } elseif (!$request->filled('password')) {
+            $messages['login_error'] = 'Password tidak boleh kosong.';
+        }
 
-        $credentials = $request->validate([
-            'username' => ['required'],
-            'password' => ['required'],
-        ]);
+        if (!empty($messages)) {
+            return redirect()->back()->withErrors($messages);
+        }
 
-        Log::info('Credentials validated', $credentials);
+        // Jika validasi berhasil, lanjutkan dengan autentikasi
+        $credentials = $request->only('username', 'password');
 
-        $sales = Sales::where('username', $credentials['username'])->first();
-
-        if ($sales) {
-            Log::info('User found', ['username' => $credentials['username']]);
-
-            if (Hash::check($credentials['password'], $sales->password)) {
-                Log::info('Password check successful');
-
-                if (Hash::needsRehash($sales->password)) {
-                    Log::info('Rehashing password');
-                    $sales->password = Hash::make($credentials['password']);
-                    $sales->save();
-                }
-
-                Auth::guard('sales')->login($sales);
-                $request->session()->regenerate();
-                Log::info('User logged in successfully');
-
-                return redirect()->intended('/app-toko-sales');
-            } else {
-                Log::warning('Password check failed', ['username' => $credentials['username']]);
-            }
-        } else {
-            Log::warning('User not found', ['username' => $credentials['username']]);
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+            return redirect()->intended('/app-toko-sales');
         }
 
         return back()->withErrors([

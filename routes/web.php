@@ -112,49 +112,48 @@ Route::get('/users', [UserController::class, 'users'])->name('users');
 Route::get('/profile', [UserController::class, 'profile'])->name('profile');
 Route::get('/kunjungan', [UserController::class, 'kunjungan'])->name('kunjungan');
 
-Route::middleware(['auth', 'sales'])->group(function () {
+Route::middleware(['sales'])->group(function () {
     Route::get('/toko-sales', [UserController::class, 'toko_sales'])->name('toko-sales');
+    // Route::get('/toko-sales', [UserController::class, 'toko_sales'])->name('toko-sales')->middleware(['auth','sales']);
+    Route::get('/tambah-toko-sales', [UserController::class, 'tambah_toko_sales'])->name('tambah-toko-sales');
+    Route::post('/simpan-toko-sales', [UserController::class, 'simpan_toko_sales'])->name('simpan-toko-sales');
+    Route::get('/stok-keluar-sales', [UserController::class, 'stok_keluar_sales'])->name('stok-keluar-sales');
+
+    Route::get('/stok-masuk-sales/{id_toko}', [UserController::class, 'stok_masuk_sales'])->name('stok-masuk-sales');
+    Route::get('/item-details/{kode_item}', [UserController::class, 'getItemDetails']);
+    Route::post('/simpan-faktur-barang', [UserController::class, 'simpan_faktur_barang'])->name('simpan-faktur-barang');
+    Route::get('/faktur-barang/{kode_toko}', [UserController::class, 'faktur_barang'])->name('faktur-barang');
+    Route::get('/faktur-bayar/{no_faktur_barang}', [UserController::class, 'faktur_bayar'])->name('faktur-bayar');
+    Route::get('/detail-faktur/{no_faktur_barang}', [UserController::class, 'detail_faktur'])->name('detail-faktur');
+    Route::post('/save-terjual/{id_faktur}', [UserController::class, 'saveTerjual'])->name('save-terjual');
+    Route::post('/save-return/{id_faktur}', [UserController::class, 'saveReturn'])->name('save-return');
+
+    Route::get('/app', [AppController::class, 'index'])->name('app');
+    Route::get('/app-toko-sales', [AppController::class, 'app_toko_sales'])->name('app-toko-sales');
+    Route::get('/app-faktur-barang/{kode_toko}', [AppController::class, 'app_faktur_barang'])->name('app-faktur-barang');
+    Route::get('/app-faktur-bayar/{no_faktur_barang}', [AppController::class, 'app_faktur_bayar'])->name('app-faktur-bayar');
+    Route::get('/app-tambah-toko', [AppController::class, 'app_tambah_toko'])->name('app-tambah-toko');
+    Route::post('/app-simpan-toko', [AppController::class, 'app_simpan_toko'])->name('app-simpan-toko');
+    Route::get('/app-tambah-stok/{id_toko}', [AppController::class, 'app_tambah_stok'])->name('app-tambah-stok');
+    Route::post('/app-simpan-stok', [AppController::class, 'app_simpan_stok'])->name('app-simpan-stok');
+    Route::post('/app-simpan-faktur-barang', [AppController::class, 'app_simpan_faktur_barang'])->name('app-simpan-faktur-barang');
+    Route::get('/app-detail-faktur-bayar/{no_faktur_barang}', [AppController::class, 'app_detail_faktur_bayar'])->name('app-detail-faktur-bayar');
+    Route::post('/app-save-terjual/{id_faktur}', [AppController::class, 'appSaveTerjual'])->name('app-save-terjual');
+    Route::post('/app-save-return/{id_faktur}', [AppController::class, 'appSaveReturn'])->name('app-save-return');
+
+    Route::get('/cetak-faktur-barang/{no_faktur_barang}', [AppController::class, 'cetak_faktur_barang'])->name('cetak-faktur-barang');
+    Route::get('/cetak-faktur-pembayaran/{no_faktur_barang}', [AppController::class, 'cetak_faktur_pembayaran'])->name('cetak-faktur-pembayaran');
+
+    Route::get('/app-cetak-faktur-barang/{no_faktur_barang}', [AppController::class, 'app_cetak_faktur_barang'])->name('app-cetak-faktur-barang');
+    Route::get('/app-cetak-faktur-pembayaran/{no_faktur_barang}', [AppController::class, 'app_cetak_faktur_pembayaran'])->name('app-cetak-faktur-pembayaran');
+
+    Route::get('/app-profile', [AppController::class, 'appProfile'])->name('app-profile');
+
+    Route::get('/app-kunjungan', [KunjunganController::class, 'appKunjungan'])->name('app-kunjungan');
+    Route::post('/app-simpan-kunjungan', [KunjunganController::class, 'appSimpanKunjungan'])->name('app-simpan-kunjungan');
+    // routes/web.php
+    Route::get('/get-toko/{id_toko}', [KunjunganController::class, 'getToko']);
+    Route::get('/app-daftar-kunjungan', [KunjunganController::class, 'appDaftarKunjungan'])->name('app-daftar-kunjungan');
 });
-
-// Route::get('/toko-sales', [UserController::class, 'toko_sales'])->name('toko-sales')->middleware(['auth','sales']);
-Route::get('/tambah-toko-sales', [UserController::class, 'tambah_toko_sales'])->name('tambah-toko-sales');
-Route::post('/simpan-toko-sales', [UserController::class, 'simpan_toko_sales'])->name('simpan-toko-sales');
-Route::get('/stok-keluar-sales', [UserController::class, 'stok_keluar_sales'])->name('stok-keluar-sales');
-
-Route::get('/stok-masuk-sales/{id_toko}', [UserController::class, 'stok_masuk_sales'])->name('stok-masuk-sales');
-Route::get('/item-details/{kode_item}', [UserController::class, 'getItemDetails']);
-Route::post('/simpan-faktur-barang', [UserController::class, 'simpan_faktur_barang'])->name('simpan-faktur-barang');
-Route::get('/faktur-barang/{kode_toko}', [UserController::class, 'faktur_barang'])->name('faktur-barang');
-Route::get('/faktur-bayar/{no_faktur_barang}', [UserController::class, 'faktur_bayar'])->name('faktur-bayar');
-Route::get('/detail-faktur/{no_faktur_barang}', [UserController::class, 'detail_faktur'])->name('detail-faktur');
-Route::post('/save-terjual/{id_faktur}', [UserController::class, 'saveTerjual'])->name('save-terjual');
-Route::post('/save-return/{id_faktur}', [UserController::class, 'saveReturn'])->name('save-return');
-
-Route::get('/app', [AppController::class, 'index'])->name('app');
-Route::get('/app-toko-sales', [AppController::class, 'app_toko_sales'])->name('app-toko-sales');
-Route::get('/app-faktur-barang/{kode_toko}', [AppController::class, 'app_faktur_barang'])->name('app-faktur-barang');
-Route::get('/app-faktur-bayar/{no_faktur_barang}', [AppController::class, 'app_faktur_bayar'])->name('app-faktur-bayar');
-Route::get('/app-tambah-toko', [AppController::class, 'app_tambah_toko'])->name('app-tambah-toko');
-Route::post('/app-simpan-toko', [AppController::class, 'app_simpan_toko'])->name('app-simpan-toko');
-Route::get('/app-tambah-stok/{id_toko}', [AppController::class, 'app_tambah_stok'])->name('app-tambah-stok');
-Route::post('/app-simpan-stok', [AppController::class, 'app_simpan_stok'])->name('app-simpan-stok');
-Route::post('/app-simpan-faktur-barang', [AppController::class, 'app_simpan_faktur_barang'])->name('app-simpan-faktur-barang');
-Route::get('/app-detail-faktur-bayar/{no_faktur_barang}', [AppController::class, 'app_detail_faktur_bayar'])->name('app-detail-faktur-bayar');
-Route::post('/app-save-terjual/{id_faktur}', [AppController::class, 'appSaveTerjual'])->name('app-save-terjual');
-Route::post('/app-save-return/{id_faktur}', [AppController::class, 'appSaveReturn'])->name('app-save-return');
-
-Route::get('/cetak-faktur-barang/{no_faktur_barang}', [AppController::class, 'cetak_faktur_barang'])->name('cetak-faktur-barang');
-Route::get('/cetak-faktur-pembayaran/{no_faktur_barang}', [AppController::class, 'cetak_faktur_pembayaran'])->name('cetak-faktur-pembayaran');
-
-Route::get('/app-cetak-faktur-barang/{no_faktur_barang}', [AppController::class, 'app_cetak_faktur_barang'])->name('app-cetak-faktur-barang');
-Route::get('/app-cetak-faktur-pembayaran/{no_faktur_barang}', [AppController::class, 'app_cetak_faktur_pembayaran'])->name('app-cetak-faktur-pembayaran');
-
-Route::get('/app-profile', [AppController::class, 'appProfile'])->name('app-profile');
-
-Route::get('/app-kunjungan', [KunjunganController::class, 'appKunjungan'])->name('app-kunjungan');
-Route::post('/app-simpan-kunjungan', [KunjunganController::class, 'appSimpanKunjungan'])->name('app-simpan-kunjungan');
-// routes/web.php
-Route::get('/get-toko/{id_toko}', [KunjunganController::class, 'getToko']);
-Route::get('/app-daftar-kunjungan', [KunjunganController::class, 'appDaftarKunjungan'])->name('app-daftar-kunjungan');
 
 Route::get('/app-logout', [AppController::class, 'appLogout'])->name('app-logout');
