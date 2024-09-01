@@ -72,15 +72,15 @@
     }
 </script>
 
-<body>
+<body onload="window.print(); window.close();">
     <div class="invoice-box print-area">
         <div style="text-align: center;">
             <img src="{{ asset('assets/img/logo bunga coklat.png') }}" width="80%" alt="">
         </div>
         @foreach ($faktur_pembayaran as $item)
             <div>
-                <p style="text-align: center;"><b>Faktur Setor Barang</b> <br>
-                <b>No. Faktur:</b> {{$item->no_faktur_barang}}</p>
+                <p style="text-align: center;"><b>Faktur Setor Pembayaran</b> <br>
+                <b>No. Faktur:</b> FP-{{$item->no_faktur_barang}}</p>
                 
                 <p>
                     <b>Stok :</b> {{ $item->total_stok_toko ?? 0 }} Pcs <br>
@@ -101,19 +101,20 @@
             </thead>
             <tbody>
                 @foreach ($faktur as $item)
-                    <tr>
-                        <td>
-                            <b>{{ $item->nama_item }}</b><br>
-                            <small>
-                                Stok : {{ $item->stok_toko }} Pcs<br>
-                                Harga (Rp.): {{ number_format($item->harga, 0, ',', '.') }}<br>
-                                Diskon: {{ $item->diskon }} %
-                            </small>
-                        </td>
-                        <td>
-                            <b>Rp. {{ number_format($item->total_harga, 0, ',', '.') }}</b>
-                        </td>
-                    </tr>
+                <tr>
+                    <td><b>{{ $item->nama_item }}</b><br>
+                        Stok : {{ $item->stok_toko ?? 0 }} Pcs<br>
+                        Jual : {{ $item->stok_terjual ?? 0 }} Pcs<br>
+                        Return : {{ $item->stok_return ?? 0 }} Pcs<br>
+                        Sisa : {{ $item->sisa_stok_toko - $item->stok_return ?? 0 }} Pcs<br>
+                    </td>
+                    <td>
+                        <b>Rp. {{ number_format($item->total_bayar, 0, ',', '.') }}</b><br><br>
+                        Diskon : {{ $item->diskon }} %<br>
+                        Harga/pcs : {{ number_format($item->harga, 0, ',', '.') }}<br>
+                        Total Harga : {{ number_format($item->total_harga, 0, ',', '.') }}
+                    </td>
+                </tr>
                 @endforeach
             </tbody>
         </table>

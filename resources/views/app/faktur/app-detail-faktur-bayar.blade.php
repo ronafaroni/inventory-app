@@ -9,7 +9,7 @@
                 <div class="text-center">
                     <div class="row">
                         <div class="col-md-6">
-                            <a href="{{ route('cetak-faktur-pembayaran', $no_faktur->no_faktur_barang) }}" class="btn btn-addon btn-info waves-effect"><i class="mdi-action-print"></i>Cetak Faktur Pembayaran</a>
+                            <a href="{{ route('app-cetak-faktur-pembayaran', $no_faktur->no_faktur_barang) }}" class="btn btn-addon btn-info waves-effect btn-print"><i class="mdi-action-print"></i>Cetak Faktur Pembayaran</a></a>      
                         </div>
                     </div>
                 </div>
@@ -174,6 +174,50 @@ $(document).ready(function() {
     @endforeach
 });
 </script>
+{{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    // Fungsi untuk mencetak faktur
+    function printFaktur(noFaktur) {
+        $.ajax({
+            url: '{{ url('/app-cetak-faktur-pembayaran') }}/' + noFaktur,
+            type: 'GET',
+            success: function(response) {
+                // Buat jendela popup baru
+                var printWindow = window.open('', '', 'width=800,height=600');
+                
+                // Tambahkan konten HTML ke jendela popup
+                printWindow.document.open();
+                printWindow.document.write('<html><head><title>Print Faktur</title>');
+                printWindow.document.write('</head><body >');
+                printWindow.document.write(response);
+                printWindow.document.write('</body></html>');
+                printWindow.document.close();
+
+                // Tunggu jendela popup siap dan cetak
+                printWindow.onload = function() {
+                    printWindow.print();
+                    printWindow.onafterprint = function() {
+                        printWindow.close();
+                    };
+                };
+            },
+            error: function(xhr) {
+                alert('Terjadi kesalahan saat mengambil data untuk dicetak.');
+            }
+        });
+    }
+
+    // Tambahkan event handler untuk tombol print
+    $('.btn-print').on('click', function(e) {
+        e.preventDefault();
+        var noFaktur = $(this).data('nofaktur'); // Ambil no_faktur dari data attribute
+        printFaktur(noFaktur);
+    });
+});
+</script> --}}
+
+
 
 
 @endsection

@@ -429,7 +429,7 @@ class AppController extends Controller
         $faktur = Faktur::where('kode_sales', $sales)
             ->where('no_faktur_barang', $no_faktur_barang)
             ->get();
-        
+
         $no_faktur = Faktur::where('kode_sales', $sales)
             ->where('no_faktur_barang', $no_faktur_barang)
             ->first();
@@ -447,22 +447,10 @@ class AppController extends Controller
             ->groupBy('no_faktur_barang')
             ->get();
 
-        // // Siapkan data yang akan dikirimkan ke view
-        // $data = [
-        //     'no_faktur_barang' => $no_faktur->no_faktur_barang,
-        //     'nama_sales' => $invoice->sales->nama_sales,
-        //     'alamat' => now()->format('d/m/Y'),
-        //     'pemilik_toko' => $invoice->invoice_number,
-        //     'jumlah_stok' => $invoice->customer_name,
-        //     'jumlah_penjualan' => $invoice->items, // Asumsikan `items` adalah relasi dengan detail faktur
-        //     'jumlah_prnjualan_press' => $invoice->total,
-        //     'jumlah_return' => $invoice->sisa_stok_toko,
-        // ];
-
-        // Load view dan konversi menjadi PDF
+        // Siapkan data yang akan dikirimkan ke view
         return view('app.faktur.app-cetak-faktur-barang', compact('faktur', 'no_faktur', 'faktur_pembayaran'));
-
     }
+
 
     public function app_cetak_faktur_pembayaran($no_faktur_barang)
     {
@@ -489,23 +477,8 @@ class AppController extends Controller
             ->groupBy('no_faktur_barang')
             ->get();
 
-        // // Siapkan data yang akan dikirimkan ke view
-        // $data = [
-        //     'no_faktur_barang' => $no_faktur->no_faktur_barang,
-        //     'nama_sales' => $invoice->sales->nama_sales,
-        //     'alamat' => now()->format('d/m/Y'),
-        //     'pemilik_toko' => $invoice->invoice_number,
-        //     'jumlah_stok' => $invoice->customer_name,
-        //     'jumlah_penjualan' => $invoice->items, // Asumsikan `items` adalah relasi dengan detail faktur
-        //     'jumlah_prnjualan_press' => $invoice->total,
-        //     'jumlah_return' => $invoice->sisa_stok_toko,
-        // ];
-
-        // Load view dan konversi menjadi PDF
-        $pdf = PDF::loadView('app.faktur.cetak-faktur-bayar', compact('faktur', 'no_faktur', 'faktur_pembayaran'));
-
-        // Kirim PDF sebagai respon ke browser
-        return $pdf->download('invoice' . $no_faktur_barang . '.pdf');
+            // Siapkan data yang akan dikirimkan ke view
+            return view('app.faktur.app-cetak-faktur-bayar', compact('faktur', 'no_faktur', 'faktur_pembayaran'));
     }
 
     public function appLogout (Request $request)

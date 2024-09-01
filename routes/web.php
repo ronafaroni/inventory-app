@@ -147,7 +147,7 @@ Route::middleware(['sales'])->group(function () {
     Route::get('/app-cetak-faktur-barang/{no_faktur_barang}', [AppController::class, 'app_cetak_faktur_barang'])->name('app-cetak-faktur-barang');
     Route::get('/app-cetak-faktur-pembayaran/{no_faktur_barang}', [AppController::class, 'app_cetak_faktur_pembayaran'])->name('app-cetak-faktur-pembayaran');
 
-    Route::get('/app-profile', [AppController::class, 'appProfile'])->name('app-profile');
+    Route::get('/app-profile', [AppController::class, 'appProfile'])->name('app-profile'); 
 
     Route::get('/app-kunjungan', [KunjunganController::class, 'appKunjungan'])->name('app-kunjungan');
     Route::post('/app-simpan-kunjungan', [KunjunganController::class, 'appSimpanKunjungan'])->name('app-simpan-kunjungan');
