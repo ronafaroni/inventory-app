@@ -13,6 +13,9 @@ use App\Models\Faktur;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use App\Models\Toko;
+use App\Models\Kunjungan;
+use Carbon\Carbon;
 
 
 class SalesController extends Controller
@@ -329,5 +332,25 @@ public function update_sales(Request $request, $id_sales)
         $sales = Sales::all();
         return view('sales.target-sales', compact('sales'));
     }
+
+    public function pencarian_target_sales(Request $request)
+    {
+        $tgl_awal = $request->input('tgl_awal');
+        $tgl_akhir = $request->input('tgl_akhir');
+    
+        // If dates are the same, ensure the full day is covered
+        $tgl_akhir = Carbon::parse($tgl_akhir)->endOfDay();
+    
+        // Retrieve all sales data with associated invoices and visits
+        $sales = Sales::with(['faktur', 'kunjungan'])->get();
+    
+        // Calculate total sales and visits for each sales person within the date range
+        foreach ($sales as $sale) {
+            $sale->total_penjualan = $sale->faktur->whereBetween('created_at', [$tgl_awal, $tgl_akhir])->sum('stok_terjual');
+            $sale->total_kunjungan = $sale->kunjungan->whereBetween('created_at', [$tgl_awal, $tgl_akhir])->count();
+        }
+    
+        return view('sales.target-sales', compact('sales'));
+    }    
 
 }   
