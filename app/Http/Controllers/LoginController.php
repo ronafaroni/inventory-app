@@ -70,10 +70,10 @@ class LoginController extends Controller
             return redirect()->back()->withErrors($messages);
         }
 
-        // Jika validasi berhasil, lanjutkan dengan autentikasi
+        // Ambil kredensial yang dimasukkan pengguna
         $credentials = $request->only('username', 'password');
 
-        if (Auth::attempt($credentials)) {
+        if (Auth::guard('sales')->attempt($credentials)) {
             $request->session()->regenerate();
             return redirect()->intended('/app-toko-sales');
         }
