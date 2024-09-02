@@ -31,33 +31,52 @@
     @endif
 
     @foreach ($toko as $data)
-        <a href="{{ route('app-faktur-barang', $data->kode_toko) }}">
+        
         <div class="row">
             <div class="col-sm-12">
             <div class="panel panel-card">
-                <div class="item">
-                    <img src="{{ asset($data->gambar_toko) }}" class="w-full r-t" style="max-width: 100%; max-height: 30%; height: auto;" />
-                <div class="bottom text-white p">
-                    <h3><b>{{$data->nama_toko}}</b></h3>
-                    <p>{{$data->pemilik_toko}}</p>
-                </div>
-                </div>
+                <a href="{{ route('app-faktur-barang', $data->kode_toko) }}">
+                    <div class="item">
+                        <img src="{{ asset($data->gambar_toko) }}" class="w-full r-t" style="max-width: 100%; height: 200px; object-fit: cover;" />
+                            <div class="bottom text-white p">
+                                <h3><b>{{$data->nama_toko}}</b></h3>
+                                <p>{{$data->pemilik_toko}}</p>
+                            </div>
+                    </div>
+                </a>
 
                 @php
                     $stokTokoData = $stok_toko->firstWhere('kode_toko', $data->kode_toko);
                 @endphp
 
-    
+                <form action="{{ route('app-delete-toko', $data->id_toko) }}" method="POST">
+                    @csrf 
+                    @method('DELETE')
+                    <button type="submit" md-ink-ripple class="md-btn md-fab orange m-r md-fab-offset pull-right">
+                        <span><i class="mdi-action-delete i-24"></i></span>
+                    </button>
+                </form> 
+                
                 <div class="p">
-                <p>Kode Toko : {{ $data->kode_toko }}</p>
-                <p>Alamat : {{ $data->alamat }}</p>
-                <p>Jumlah Stok : {{ $stokTokoData ? ($stokTokoData->total_stok_toko - $stokTokoData->total_terjual - $stokTokoData->total_return) : 0 }}</Jumlah>
-                <p>Jumlah Penjualan : {{ $stok_toko->firstWhere('kode_toko', $data->kode_toko)->total_terjual ?? 0 }} pcs</p>
-                </div>
+                    <p>Kode Toko : {{ $data->kode_toko }}</p>
+                    <p>Alamat : {{ $data->alamat }}</p>
+                    <p>Jumlah Stok : {{ $stokTokoData ? ($stokTokoData->total_stok_toko - $stokTokoData->total_terjual - $stokTokoData->total_return) : 0 }}</Jumlah>
+                    <p>Jumlah Penjualan : {{ $stok_toko->firstWhere('kode_toko', $data->kode_toko)->total_terjual ?? 0 }} pcs</p>
+                    <hr>
+                    <div class="btn-group" style="width: 100%; display: flex; justify-content: space-between;">
+                        <a href="{{ route('app-edit-toko', $data->id_toko) }}" class="text-muted">
+                            <i class="mdi mdi-action-settings" aria-hidden="true" style="margin-right: 2px;"></i> Edit
+                        </a>
+                        <a href="{{ route('app-cetak-toko', $data->kode_toko) }}" class="text-muted">
+                            <i class="mdi mdi-action-print" aria-hidden="true" style="margin-right: 2px;"></i> Cetak
+                        </a>                        
+                    </div>
+                    
+                </div> 
             </div>
             </div>
         </div>
-        </a>
+       
     @endforeach
 
   @endsection

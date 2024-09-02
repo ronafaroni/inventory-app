@@ -15,6 +15,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use DNS1D;
 use PDF;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class AppController extends Controller
 {
@@ -120,6 +126,12 @@ class AppController extends Controller
         return view('app.toko.app-tambah-toko');
     }
 
+    public function appEditToko(Request $request, $id_toko)
+    {
+        $toko = Toko::find($id_toko);
+        return view('app.toko.app-edit-toko', compact('toko'));
+    }
+
     public function app_simpan_toko(Request $request)
     {
         $request->validate([
@@ -178,6 +190,85 @@ class AppController extends Controller
         }
 
         return redirect()->route('app-toko-sales', compact('toko_sales'));
+    }
+
+    public function appUpdateToko(Request $request, $id_toko)
+    {
+         // Cari toko berdasarkan ID
+        $toko = Toko::findOrFail($id_toko);
+        
+        $request->validate([
+            'kode_toko' => [
+                'required',
+                Rule::unique('toko', 'kode_toko')->ignore($toko->kode_toko, 'kode_toko'),
+            ],
+            'nama_toko' => 'required',
+            'pemilik_toko' => 'required',
+            'no_telp' => 'required',
+            'alamat' => 'required',
+            'link_gmap' => 'required',
+            'gambar' => 'sometimes|image|mimes:jpeg,png,jpg|max:2048',
+        ],
+        [
+            'kode_toko.unique' => 'Kode Toko sudah ada.',
+            'kode_toko.required' => 'Kode Toko harus diisi.',
+            'nama_toko.required' => 'Nama harus diisi.',
+            'pemilik_toko.required' => 'Pemilik Toko harus diisi.',
+            'no_telp.required' => 'Nomor Telepon harus diisi.',
+            'alamat.required' => 'Alamat harus diisi.',
+            'link_gmap.required' => 'Link Google Maps harus diisi.',
+            'kode_sales.required' => 'Kode Sales harus diisi.',
+            'gambar.required' => 'Gambar Toko harus diisi.',
+            'gambar.image' => 'File harus berupa gambar.',
+            'gambar.mimes' => 'File harus berupa jpeg, png, jpg.',
+            'gambar.max' => 'File tidak boleh lebih dari 2 MB.',
+        ]);
+
+        //Membuat barcode
+        $barcode = 'BC'.time();  // Generate unique barcode
+
+        // Proses upload file jika ada gambar baru
+        if ($request->hasFile('gambar')) {
+            $file = $request->file('gambar');
+            $nama_file = $request->input('nama_toko') . '.' . $file->getClientOriginalExtension();
+            $tujuan_upload = '/uploads/toko/';
+            $file->move(public_path($tujuan_upload), $nama_file);
+            $toko->gambar_toko = $tujuan_upload . $nama_file; // Update gambar
+        }
+        // Simpan ke database
+        
+        $toko->kode_toko = $request->input('kode_toko');
+        $toko->nama_toko = $request->input('nama_toko');
+        $toko->pemilik_toko = $request->input('pemilik_toko');
+        $toko->no_telp = $request->input('no_telp');
+        $toko->alamat = $request->input('alamat');
+        $toko->link_gmap = $request->input('link_gmap');
+        $toko->kode_sales = Auth::guard('sales')->user()->kode_sales;
+        $toko->barcode = $barcode;
+        $toko->update();
+
+        session()->flash('success', 'Data toko berhasil ditambahkan.');
+
+        $toko_sales = Toko::all();
+        foreach ($toko_sales as $data) {
+            $data->barcode = DNS1D::getBarcodeHTML($data->kode_toko, 'C39');
+        }
+
+        return redirect()->route('app-toko-sales', compact('toko_sales'));
+    }
+
+    public function appDeleteToko($id_toko)
+    {
+        $toko = Toko::find($id_toko);
+        $toko->delete();
+        session()->flash('delete', 'Data toko berhasil dihapus.');
+        return redirect()->route('app-toko-sales');
+    }
+
+    public function appCetakToko($kode_toko)
+    {
+        $toko = Toko::with('sales')->where('kode_toko', $kode_toko)->get();
+        return view('app.toko.app-cetak-toko', compact('toko'));
     }
 
     public function app_tambah_stok($id_toko)
@@ -450,7 +541,7 @@ class AppController extends Controller
         // Siapkan data yang akan dikirimkan ke view
         return view('app.faktur.app-cetak-faktur-barang', compact('faktur', 'no_faktur', 'faktur_pembayaran'));
     }
-
+ 
 
     public function app_cetak_faktur_pembayaran($no_faktur_barang)
     {

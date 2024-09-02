@@ -113,20 +113,20 @@ Route::get('/profile', [UserController::class, 'profile'])->name('profile');
 Route::get('/kunjungan', [UserController::class, 'kunjungan'])->name('kunjungan');
 
 Route::middleware(['sales'])->group(function () {
-    Route::get('/toko-sales', [UserController::class, 'toko_sales'])->name('toko-sales');
+    // Route::get('/toko-sales', [UserController::class, 'toko_sales'])->name('toko-sales');
     // Route::get('/toko-sales', [UserController::class, 'toko_sales'])->name('toko-sales')->middleware(['auth','sales']);
-    Route::get('/tambah-toko-sales', [UserController::class, 'tambah_toko_sales'])->name('tambah-toko-sales');
-    Route::post('/simpan-toko-sales', [UserController::class, 'simpan_toko_sales'])->name('simpan-toko-sales');
-    Route::get('/stok-keluar-sales', [UserController::class, 'stok_keluar_sales'])->name('stok-keluar-sales');
+    // Route::get('/tambah-toko-sales', [UserController::class, 'tambah_toko_sales'])->name('tambah-toko-sales');
+    // Route::post('/simpan-toko-sales', [UserController::class, 'simpan_toko_sales'])->name('simpan-toko-sales');
+    // Route::get('/stok-keluar-sales', [UserController::class, 'stok_keluar_sales'])->name('stok-keluar-sales');
 
-    Route::get('/stok-masuk-sales/{id_toko}', [UserController::class, 'stok_masuk_sales'])->name('stok-masuk-sales');
-    Route::get('/item-details/{kode_item}', [UserController::class, 'getItemDetails']);
-    Route::post('/simpan-faktur-barang', [UserController::class, 'simpan_faktur_barang'])->name('simpan-faktur-barang');
-    Route::get('/faktur-barang/{kode_toko}', [UserController::class, 'faktur_barang'])->name('faktur-barang');
-    Route::get('/faktur-bayar/{no_faktur_barang}', [UserController::class, 'faktur_bayar'])->name('faktur-bayar');
-    Route::get('/detail-faktur/{no_faktur_barang}', [UserController::class, 'detail_faktur'])->name('detail-faktur');
-    Route::post('/save-terjual/{id_faktur}', [UserController::class, 'saveTerjual'])->name('save-terjual');
-    Route::post('/save-return/{id_faktur}', [UserController::class, 'saveReturn'])->name('save-return');
+    // Route::get('/stok-masuk-sales/{id_toko}', [UserController::class, 'stok_masuk_sales'])->name('stok-masuk-sales');
+    // Route::get('/item-details/{kode_item}', [UserController::class, 'getItemDetails']);
+    // Route::post('/simpan-faktur-barang', [UserController::class, 'simpan_faktur_barang'])->name('simpan-faktur-barang');
+    // Route::get('/faktur-barang/{kode_toko}', [UserController::class, 'faktur_barang'])->name('faktur-barang');
+    // Route::get('/faktur-bayar/{no_faktur_barang}', [UserController::class, 'faktur_bayar'])->name('faktur-bayar');
+    // Route::get('/detail-faktur/{no_faktur_barang}', [UserController::class, 'detail_faktur'])->name('detail-faktur');
+    // Route::post('/save-terjual/{id_faktur}', [UserController::class, 'saveTerjual'])->name('save-terjual');
+    // Route::post('/save-return/{id_faktur}', [UserController::class, 'saveReturn'])->name('save-return');
 
     Route::get('/app', [AppController::class, 'index'])->name('app');
     Route::get('/app-toko-sales', [AppController::class, 'app_toko_sales'])->name('app-toko-sales');
@@ -134,6 +134,11 @@ Route::middleware(['sales'])->group(function () {
     Route::get('/app-faktur-bayar/{no_faktur_barang}', [AppController::class, 'app_faktur_bayar'])->name('app-faktur-bayar');
     Route::get('/app-tambah-toko', [AppController::class, 'app_tambah_toko'])->name('app-tambah-toko');
     Route::post('/app-simpan-toko', [AppController::class, 'app_simpan_toko'])->name('app-simpan-toko');
+    Route::get('/app-edit-toko/{id_toko}', [AppController::class, 'appEditToko'])->name('app-edit-toko');
+    Route::post('/app-update-toko/{id_toko}', [AppController::class, 'appUpdateToko'])->name('app-update-toko');
+    Route::delete('/app-delete-toko/{id_toko}', [AppController::class, 'appDeleteToko'])->name('app-delete-toko');
+    Route::get('/app-cetak-toko/{id_toko}', [AppController::class, 'appCetakToko'])->name('app-cetak-toko');
+
     Route::get('/app-tambah-stok/{id_toko}', [AppController::class, 'app_tambah_stok'])->name('app-tambah-stok');
     Route::post('/app-simpan-stok', [AppController::class, 'app_simpan_stok'])->name('app-simpan-stok');
     Route::post('/app-simpan-faktur-barang', [AppController::class, 'app_simpan_faktur_barang'])->name('app-simpan-faktur-barang');

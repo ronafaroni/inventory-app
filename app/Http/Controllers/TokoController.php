@@ -177,7 +177,7 @@ class TokoController extends Controller
     $toko->link_gmap = $request->input('link_gmap');
     $toko->kode_sales = $request->input('kode_sales');
     $toko->barcode = $barcode;
-    $toko->save(); // Simpan perubahan ke database
+    $toko->update(); // Simpan perubahan ke database
 
     // Flash message ke sesi
     session()->flash('update', 'Data toko berhasil diupdate.');
