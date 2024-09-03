@@ -538,23 +538,27 @@ class AppController extends Controller
             ->groupBy('no_faktur_barang')
             ->get();
 
-        // Siapkan data yang akan dikirimkan ke view
-        return view('app.faktur.app-cetak-faktur-barang', compact('faktur', 'no_faktur', 'faktur_pembayaran'));
+        // Query untuk mendapatkan id_toko berdasarkan kode_toko
+        $id_toko = Toko::where('kode_toko', $no_faktur->kode_toko)->value('id_toko');
+
+        // Kirimkan id_toko ke view bersama data lainnya
+        return view('app.faktur.app-cetak-faktur-barang', compact('faktur', 'no_faktur', 'faktur_pembayaran', 'id_toko'));
     }
+
  
 
     public function app_cetak_faktur_pembayaran($no_faktur_barang)
     {
         $sales = Auth::guard('sales')->user()->kode_sales;
-
+    
         $faktur = Faktur::where('kode_sales', $sales)
             ->where('no_faktur_barang', $no_faktur_barang)
             ->get();
-        
+    
         $no_faktur = Faktur::where('kode_sales', $sales)
             ->where('no_faktur_barang', $no_faktur_barang)
             ->first();
-
+    
         $faktur_pembayaran = Faktur::where('kode_sales', $sales)
             ->where('no_faktur_barang', $no_faktur_barang)
             ->select(
@@ -567,9 +571,12 @@ class AppController extends Controller
                 DB::raw('SUM(stok_return) as total_return'))
             ->groupBy('no_faktur_barang')
             ->get();
-
-            // Siapkan data yang akan dikirimkan ke view
-            return view('app.faktur.app-cetak-faktur-bayar', compact('faktur', 'no_faktur', 'faktur_pembayaran'));
+    
+        // Query untuk mendapatkan id_toko berdasarkan kode_toko
+        $id_toko = Toko::where('kode_toko', $no_faktur->kode_toko)->value('id_toko');
+    
+        // Kirimkan id_toko ke view bersama data lainnya
+        return view('app.faktur.app-cetak-faktur-bayar', compact('faktur', 'no_faktur', 'faktur_pembayaran', 'id_toko'));
     }
 
     public function appLogout (Request $request)

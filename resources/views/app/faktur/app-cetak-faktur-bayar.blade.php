@@ -127,7 +127,7 @@
 
         <!-- Barcode Section -->
         <div class="barcode">
-            <img src="data:image/png;base64,{{ base64_encode(DNS1D::getBarcodePNG($item->id_toko, 'C39')) }}" alt="Barcode Toko" style="width: 100%; height: auto;">
+            <img src="data:image/png;base64,{{ base64_encode(DNS1D::getBarcodePNG($id_toko, 'C39')) }}" alt="Barcode Toko" style="width: 100%; height: auto;">
         </div>
     </div> 
 </body>
