@@ -13,7 +13,9 @@
                         </div>
                         <br>
                         <div class="col-md-3">
-                            <a href="{{ route('app-cetak-faktur-barang', $no_faktur->no_faktur_barang) }}" class="btn btn-addon btn-info waves-effect"><i class="mdi-action-print"></i>Cetak Faktur Barang</a>
+                            <a href="javascript:void(0);" class="btn btn-addon btn-info waves-effect" onclick="handlePrint('{{ route('app-cetak-faktur-barang', $no_faktur->no_faktur_barang) }}')">
+                                <i class="mdi mdi-action-print" aria-hidden="true"></i> Cetak Faktur Barang
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -83,11 +85,30 @@
                     @endif
                 @endforeach
             </div>
-            
-            
         </div>
     </div>
 </div>
-
+<script>
+    function handlePrint(url) {
+        // Lakukan AJAX request ke server
+        fetch(url)
+            .then(response => response.text())
+            .then(data => {
+                // Buka window baru untuk print
+                const printWindow = window.open('', '_blank');
+                printWindow.document.write(data);
+                printWindow.document.close();
+                printWindow.focus();
+                // Tunggu hingga konten selesai di-load, lalu print
+                printWindow.onload = function () {
+                    printWindow.print();
+                    printWindow.close();
+                };
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+    }
+</script>
 
 @endsection

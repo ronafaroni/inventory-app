@@ -67,9 +67,9 @@
                         <a href="{{ route('app-edit-toko', $data->id_toko) }}" class="text-muted">
                             <i class="mdi mdi-action-settings" aria-hidden="true" style="margin-right: 2px;"></i> Edit
                         </a>
-                        <a href="{{ route('app-cetak-toko', $data->kode_toko) }}" class="text-muted">
+                        <a href="javascript:void(0);" class="text-muted" onclick="handlePrint('{{ route('app-cetak-toko', $data->kode_toko) }}')">
                             <i class="mdi mdi-action-print" aria-hidden="true" style="margin-right: 2px;"></i> Cetak
-                        </a>                        
+                        </a>                     
                     </div>
                     
                 </div> 
@@ -78,5 +78,28 @@
         </div>
        
     @endforeach
+
+    <script>
+        function handlePrint(url) {
+            // Lakukan AJAX request ke server
+            fetch(url)
+                .then(response => response.text())
+                .then(data => {
+                    // Buka window baru untuk print
+                    const printWindow = window.open('', '_blank');
+                    printWindow.document.write(data);
+                    printWindow.document.close();
+                    printWindow.focus();
+                    // Tunggu hingga konten selesai di-load, lalu print
+                    printWindow.onload = function () {
+                        printWindow.print();
+                        printWindow.close();
+                    };
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+        }
+    </script>
 
   @endsection

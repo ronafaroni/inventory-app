@@ -81,7 +81,7 @@
             <div>
                 <!-- Barcode Section -->
                 <div class="barcode">
-                    <img src="data:image/png;base64,{{ DNS1D::getBarcodePNG($item->kode_toko, 'C39') }}" alt="Barcode Toko" style="width: 100%; height: auto;">
+                    <img src="data:image/png;base64,{{ DNS1D::getBarcodePNG($item->id_toko, 'C39') }}" alt="Barcode Toko" style="width: 100%; height: auto;">
                 </div>
                 <h3 style="text-align: center;">
                     <b> {{$item->nama_toko}} </b><br>
