@@ -10,13 +10,12 @@
             @page {
                 margin: 0;
                 size: 58mm auto;
-                /* Menyesuaikan ukuran kertas 58mm */
+                /* Menyesuaikan tinggi otomatis dengan konten */
             }
 
             body {
                 margin: 0;
                 font-size: 12px;
-                /* Ukuran font lebih besar untuk cetakan */
             }
 
             .print-area {
@@ -34,13 +33,10 @@
 
         .invoice-box {
             width: 58mm;
-            /* Lebar disesuaikan dengan kertas 58mm */
             margin: auto;
             padding: 5px;
             font-size: 11px;
-            /* Ukuran font lebih besar untuk cetakan */
             line-height: 14px;
-            /* Sesuaikan line-height */
             color: #000;
             box-sizing: border-box;
         }
@@ -48,7 +44,6 @@
         .invoice-box table {
             width: 100%;
             line-height: 14px;
-            /* Sesuaikan line-height */
             text-align: left;
             border-collapse: collapse;
         }
@@ -56,7 +51,6 @@
         .invoice-box table td,
         .invoice-box table th {
             padding: 2px 0;
-            /* Sesuaikan padding */
             vertical-align: top;
             word-break: break-word;
         }
@@ -84,16 +78,11 @@
     </style>
 </head>
 
-<script>
-    window.onload = function() {
-        window.print();
-    }
-</script>
-
 <body>
+    <!-- Bagian cetak detail toko -->
     <div class="invoice-box print-area">
         <div style="text-align: center;">
-            <img src="{{ asset('assets/img/logo bunga coklat.png') }}" width="80%" alt="">
+            <img src="{{ asset('assets/img/logo bunga coklat.png') }}" width="80%" alt="Logo">
         </div>
         @foreach ($toko as $item)
             <div>
@@ -124,8 +113,16 @@
             <p>Terima Kasih atas Kerjasama Anda!<br>
                 Tanggal Cetak: {{ \Carbon\Carbon::now('Asia/Jakarta')->format('d-m-Y H:i:s') }}</p>
         </div>
-
     </div>
+
+    <!-- Bagian untuk menampilkan PDF menggunakan PDF.js -->
+    <div id="pdf-viewer" style="margin-top: 20px;">
+        <iframe id="pdf-iframe" style="width:100%; height:600px;"
+            src="https://mozilla.github.io/pdf.js/web/viewer.html?file={{ asset('storage/pdf/informasi_toko_' . $toko[0]->id_toko . '.pdf') }}"></iframe>
+    </div>
+
+    <!-- Tambahkan PDF.js menggunakan CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
 </body>
 
 </html>

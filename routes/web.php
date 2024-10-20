@@ -12,6 +12,7 @@ use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AppController;
 use App\Http\Controllers\KunjunganController;
+use App\Http\Controllers\PrintController;
 use App\Models\Kunjungan;
 use App\Models\Toko;
 use App\Http\Middleware\RedirectIfNotSales;
@@ -60,7 +61,6 @@ Route::delete('/delete-sales/{id_sales}', [SalesController::class, 'delete_sales
 Route::get('/detail-sales/{id_sales}', [SalesController::class, 'detail_sales'])->name('detail-sales')->middleware(['auth', 'admin']);
 Route::post('/update-pencapaian-sales/{id_sales}', [SalesController::class, 'update_pencapaian_sales'])->name('update-pencapaian-sales')->middleware(['auth', 'admin']);
 Route::get('/pencarian-target-sales', [SalesController::class, 'pencarian_target_sales'])->name('pencarian-target-sales')->middleware(['auth', 'admin']);
-
 
 Route::get('/daftar-sales', [SalesController::class, 'daftar_sales'])->name('daftar-sales')->middleware(['auth', 'admin']);
 Route::get('/stok-sales', [SalesController::class, 'stok_sales'])->name('stok-sales')->middleware(['auth', 'admin']);
@@ -138,6 +138,7 @@ Route::middleware(['sales'])->group(function () {
     Route::post('/app-update-toko/{id_toko}', [AppController::class, 'appUpdateToko'])->name('app-update-toko');
     Route::delete('/app-delete-toko/{id_toko}', [AppController::class, 'appDeleteToko'])->name('app-delete-toko');
     Route::get('/app-cetak-toko/{id_toko}', [AppController::class, 'appCetakToko'])->name('app-cetak-toko');
+    Route::get('/app-cetak-pdf-toko/{id_toko}', [AppController::class, 'appCetakPdfToko'])->name('app-cetak-pdf-toko');
 
     Route::get('/app-tambah-stok/{id_toko}', [AppController::class, 'app_tambah_stok'])->name('app-tambah-stok');
     Route::post('/app-simpan-stok', [AppController::class, 'app_simpan_stok'])->name('app-simpan-stok');
@@ -152,7 +153,7 @@ Route::middleware(['sales'])->group(function () {
     Route::get('/app-cetak-faktur-barang/{no_faktur_barang}', [AppController::class, 'app_cetak_faktur_barang'])->name('app-cetak-faktur-barang');
     Route::get('/app-cetak-faktur-pembayaran/{no_faktur_barang}', [AppController::class, 'app_cetak_faktur_pembayaran'])->name('app-cetak-faktur-pembayaran');
 
-    Route::get('/app-profile', [AppController::class, 'appProfile'])->name('app-profile'); 
+    Route::get('/app-profile', [AppController::class, 'appProfile'])->name('app-profile');
 
     Route::get('/app-kunjungan', [KunjunganController::class, 'appKunjungan'])->name('app-kunjungan');
     Route::post('/app-simpan-kunjungan', [KunjunganController::class, 'appSimpanKunjungan'])->name('app-simpan-kunjungan');
@@ -162,3 +163,5 @@ Route::middleware(['sales'])->group(function () {
 });
 
 Route::get('/app-logout', [AppController::class, 'appLogout'])->name('app-logout');
+
+Route::get('/print-faktur', [PrintController::class, 'printFaktur']);
