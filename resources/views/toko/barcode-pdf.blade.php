@@ -27,6 +27,8 @@
 
                 <div>
                     <div class="barcode" style="text-align: center;">
+                        {{-- <img src="data:image/png;base64,{{ DNS1D::getBarcodePNG($item->id_toko, 'C39') }}"
+                                alt="Barcode Toko" style="width: 50%; height: auto;"> --}}
                         <img src="data:image/png;base64,{{ $barcode }}" alt="QR Code">
                     </div>
                     <br>
@@ -51,9 +53,6 @@
                 <div class="gap-3" style="text-align: center;">
                     <p>Terima Kasih atas Kerjasama Anda!<br>
                         Tanggal Cetak: {{ \Carbon\Carbon::now('Asia/Jakarta')->format('d-m-Y H:i:s') }}</p>
-                </div>
-                <div class="p-1">
-                    <p class="invisible">copyright %copy sintesa.com. Allright</p>
                 </div>
             </div>
             <div class="col-1"></div>

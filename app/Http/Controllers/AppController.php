@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use DNS1D;
+use DNS2D;
 use PDF;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -56,21 +57,22 @@ class AppController extends Controller
     public function app_faktur_barang($kode_toko)
     {
         $sales = Auth::guard('sales')->user()->kode_sales;
-        
+
         $barang = Toko::with('faktur')
-        ->where('kode_toko', $kode_toko)
-        ->first();
+            ->where('kode_toko', $kode_toko)
+            ->first();
 
         $faktur = Faktur::where('kode_sales', $sales)
             ->where('kode_toko', $kode_toko)
             ->select(
-                'no_faktur_barang', 
-                DB::raw('SUM(stok_toko) as total_stok_toko'), 
+                'no_faktur_barang',
+                DB::raw('SUM(stok_toko) as total_stok_toko'),
                 DB::raw('SUM(total_harga) as total_harga'),
                 DB::raw('SUM(sisa_stok_toko) as total_sisa_stok_toko'),
                 DB::raw('SUM(stok_terjual) as total_stok_terjual'),
                 DB::raw('SUM(total_bayar) as total_bayar'),
-                DB::raw('SUM(stok_return) as total_return'))
+                DB::raw('SUM(stok_return) as total_return')
+            )
 
             ->groupBy('no_faktur_barang')
             ->get();
@@ -85,36 +87,39 @@ class AppController extends Controller
         $faktur = Faktur::where('kode_sales', $sales)
             ->where('no_faktur_barang', $no_faktur_barang)
             ->get();
-        
+
         $no_faktur = Faktur::where('kode_sales', $sales)
             ->where('no_faktur_barang', $no_faktur_barang)
             ->first();
 
-        
+
         $faktur_pembayaran = Faktur::where('kode_sales', $sales)
-        ->where('no_faktur_barang', $no_faktur_barang)
-        ->select(
-            'no_faktur_barang', 
-            DB::raw('SUM(stok_toko) as total_stok_toko'), 
-            DB::raw('SUM(total_harga) as total_harga'),
-            DB::raw('SUM(sisa_stok_toko) as total_sisa_stok_toko'),
-            DB::raw('SUM(stok_terjual) as total_stok_terjual'),
-            DB::raw('SUM(total_bayar) as total_bayar'),
-            DB::raw('SUM(stok_return) as total_return'))
-        ->groupBy('no_faktur_barang')
-        ->get();
+            ->where('no_faktur_barang', $no_faktur_barang)
+            ->select(
+                'no_faktur_barang',
+                DB::raw('SUM(stok_toko) as total_stok_toko'),
+                DB::raw('SUM(total_harga) as total_harga'),
+                DB::raw('SUM(sisa_stok_toko) as total_sisa_stok_toko'),
+                DB::raw('SUM(stok_terjual) as total_stok_terjual'),
+                DB::raw('SUM(total_bayar) as total_bayar'),
+                DB::raw('SUM(stok_return) as total_return')
+            )
+            ->groupBy('no_faktur_barang')
+            ->get();
 
         $faktur_bayar = Faktur::where('kode_sales', $sales)
             ->where('no_faktur_barang', $no_faktur_barang)
             ->select(
-                'no_faktur_barang', 'no_faktur_bayar',
-                DB::raw('SUM(stok_toko) as total_stok_toko'), 
+                'no_faktur_barang',
+                'no_faktur_bayar',
+                DB::raw('SUM(stok_toko) as total_stok_toko'),
                 DB::raw('SUM(total_harga) as total_harga'),
                 DB::raw('SUM(sisa_stok_toko) as total_sisa_stok_toko'),
                 DB::raw('SUM(stok_terjual) as total_stok_terjual'),
                 DB::raw('SUM(total_bayar) as total_bayar'),
                 DB::raw('SUM(stok_return) as total_return'),
-                DB::raw('SUM(setor_gudang) as total_setor_gudang'))
+                DB::raw('SUM(setor_gudang) as total_setor_gudang')
+            )
             ->groupBy('no_faktur_barang', 'no_faktur_bayar')
             ->get();
 
@@ -134,40 +139,44 @@ class AppController extends Controller
 
     public function app_simpan_toko(Request $request)
     {
-        $request->validate([
-            'kode_toko' => 'required|unique:toko,kode_toko',
-            'nama_toko' => 'required',
-            'pemilik_toko' => 'required',
-            'no_telp' => 'required',
-            'alamat' => 'required',
-            'link_gmap' => 'required',
-            'gambar' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-        ],
-        [
-            'kode_toko.unique' => 'Kode Toko sudah ada.',
-            'kode_toko.required' => 'Kode Toko harus diisi.',
-            'nama_toko.required' => 'Nama harus diisi.',
-            'pemilik_toko.required' => 'Pemilik Toko harus diisi.',
-            'no_telp.required' => 'Nomor Telepon harus diisi.',
-            'alamat.required' => 'Alamat harus diisi.',
-            'link_gmap.required' => 'Link Google Maps harus diisi.',
-            'kode_sales.required' => 'Kode Sales harus diisi.',
-            'gambar.required' => 'Gambar Toko harus diisi.',
-            'gambar.image' => 'File harus berupa gambar.',
-            'gambar.mimes' => 'File harus berupa jpeg, png, jpg.',
-            'gambar.max' => 'File tidak boleh lebih dari 2 MB.',
-        ]);
+        $request->validate(
+            [
+                'kode_toko' => 'required|unique:toko,kode_toko',
+                'nama_toko' => 'required',
+                'pemilik_toko' => 'required',
+                'no_telp' => 'required',
+                'alamat' => 'required',
+                'link_gmap' => 'required',
+                'gambar' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            ],
+            [
+                'kode_toko.unique' => 'Kode Toko sudah ada.',
+                'kode_toko.required' => 'Kode Toko harus diisi.',
+                'nama_toko.required' => 'Nama harus diisi.',
+                'pemilik_toko.required' => 'Pemilik Toko harus diisi.',
+                'no_telp.required' => 'Nomor Telepon harus diisi.',
+                'alamat.required' => 'Alamat harus diisi.',
+                'link_gmap.required' => 'Link Google Maps harus diisi.',
+                'kode_sales.required' => 'Kode Sales harus diisi.',
+                'gambar.required' => 'Gambar Toko harus diisi.',
+                'gambar.image' => 'File harus berupa gambar.',
+                'gambar.mimes' => 'File harus berupa jpeg, png, jpg.',
+                'gambar.max' => 'File tidak boleh lebih dari 2 MB.',
+            ]
+        );
 
         //Membuat barcode
-        $barcode = 'BC'.time();  // Generate unique barcode
+        $barcode = 'BC' . time();  // Generate unique barcode
 
         // Proses upload file
         $file = $request->file('gambar');
         $nama_file = $request->input('nama_toko') . '.' . $file->getClientOriginalExtension();
         // Tujuan file diupload kemana
         $tujuan_upload = '/uploads/toko/';
+        //tujuan upload server
+        $tujuan_upload_server = $_SERVER['DOCUMENT_ROOT'] . '/uploads/toko/';
         // Tempat file diupload
-        $file->move(public_path($tujuan_upload), $nama_file);
+        $file->move($_SERVER['DOCUMENT_ROOT'] . ($tujuan_upload), $nama_file);
 
         // Simpan ke database
         $toko = new Toko;
@@ -179,7 +188,9 @@ class AppController extends Controller
         $toko->link_gmap = $request->input('link_gmap');
         $toko->kode_sales = Auth::guard('sales')->user()->kode_sales;
         $toko->gambar_toko = $tujuan_upload . $nama_file;
+        $toko->gambar_toko = $tujuan_upload . $nama_file;
         $toko->barcode = $barcode;
+        $toko->pencapaian = "1";
         $toko->save();
 
         session()->flash('success', 'Data toko berhasil ditambahkan.');
@@ -194,49 +205,55 @@ class AppController extends Controller
 
     public function appUpdateToko(Request $request, $id_toko)
     {
-         // Cari toko berdasarkan ID
+        // Cari toko berdasarkan ID
         $toko = Toko::findOrFail($id_toko);
-        
-        $request->validate([
-            'kode_toko' => [
-                'required',
-                Rule::unique('toko', 'kode_toko')->ignore($toko->kode_toko, 'kode_toko'),
+
+        $request->validate(
+            [
+                'kode_toko' => [
+                    'required',
+                    Rule::unique('toko', 'kode_toko')->ignore($toko->kode_toko, 'kode_toko'),
+                ],
+                'nama_toko' => 'required',
+                'pemilik_toko' => 'required',
+                'no_telp' => 'required',
+                'alamat' => 'required',
+                'link_gmap' => 'required',
+                'gambar' => 'sometimes|image|mimes:jpeg,png,jpg|max:2048',
             ],
-            'nama_toko' => 'required',
-            'pemilik_toko' => 'required',
-            'no_telp' => 'required',
-            'alamat' => 'required',
-            'link_gmap' => 'required',
-            'gambar' => 'sometimes|image|mimes:jpeg,png,jpg|max:2048',
-        ],
-        [
-            'kode_toko.unique' => 'Kode Toko sudah ada.',
-            'kode_toko.required' => 'Kode Toko harus diisi.',
-            'nama_toko.required' => 'Nama harus diisi.',
-            'pemilik_toko.required' => 'Pemilik Toko harus diisi.',
-            'no_telp.required' => 'Nomor Telepon harus diisi.',
-            'alamat.required' => 'Alamat harus diisi.',
-            'link_gmap.required' => 'Link Google Maps harus diisi.',
-            'kode_sales.required' => 'Kode Sales harus diisi.',
-            'gambar.required' => 'Gambar Toko harus diisi.',
-            'gambar.image' => 'File harus berupa gambar.',
-            'gambar.mimes' => 'File harus berupa jpeg, png, jpg.',
-            'gambar.max' => 'File tidak boleh lebih dari 2 MB.',
-        ]);
+            [
+                'kode_toko.unique' => 'Kode Toko sudah ada.',
+                'kode_toko.required' => 'Kode Toko harus diisi.',
+                'nama_toko.required' => 'Nama harus diisi.',
+                'pemilik_toko.required' => 'Pemilik Toko harus diisi.',
+                'no_telp.required' => 'Nomor Telepon harus diisi.',
+                'alamat.required' => 'Alamat harus diisi.',
+                'link_gmap.required' => 'Link Google Maps harus diisi.',
+                'kode_sales.required' => 'Kode Sales harus diisi.',
+                'gambar.required' => 'Gambar Toko harus diisi.',
+                'gambar.image' => 'File harus berupa gambar.',
+                'gambar.mimes' => 'File harus berupa jpeg, png, jpg.',
+                'gambar.max' => 'File tidak boleh lebih dari 2 MB.',
+            ]
+        );
 
         //Membuat barcode
-        $barcode = 'BC'.time();  // Generate unique barcode
+        $barcode = 'BC' . time();  // Generate unique barcode
 
         // Proses upload file jika ada gambar baru
         if ($request->hasFile('gambar')) {
+            // Proses upload file
             $file = $request->file('gambar');
             $nama_file = $request->input('nama_toko') . '.' . $file->getClientOriginalExtension();
+            // Tujuan file diupload kemana
             $tujuan_upload = '/uploads/toko/';
-            $file->move(public_path($tujuan_upload), $nama_file);
-            $toko->gambar_toko = $tujuan_upload . $nama_file; // Update gambar
+            //tujuan upload server
+            $tujuan_upload_server = $_SERVER['DOCUMENT_ROOT'] . '/uploads/toko/';
+            // Tempat file diupload
+            $file->move($_SERVER['DOCUMENT_ROOT'] . ($tujuan_upload), $nama_file);
         }
         // Simpan ke database
-        
+
         $toko->kode_toko = $request->input('kode_toko');
         $toko->nama_toko = $request->input('nama_toko');
         $toko->pemilik_toko = $request->input('pemilik_toko');
@@ -245,6 +262,8 @@ class AppController extends Controller
         $toko->link_gmap = $request->input('link_gmap');
         $toko->kode_sales = Auth::guard('sales')->user()->kode_sales;
         $toko->barcode = $barcode;
+        $toko->gambar_toko = $tujuan_upload . $nama_file;
+        $toko->pencapaian = "1";
         $toko->update();
 
         session()->flash('success', 'Data toko berhasil ditambahkan.');
@@ -267,9 +286,51 @@ class AppController extends Controller
 
     public function appCetakToko($kode_toko)
     {
-        $toko = Toko::with('sales')->where('kode_toko', $kode_toko)->get();
-        return view('app.toko.app-cetak-toko', compact('toko'));
+        // Validasi input
+        if (empty($kode_toko)) {
+            return redirect()->back()->with('error', 'Kode toko tidak valid.');
+        }
+
+        // Cari toko berdasarkan kode_toko
+        $toko = Toko::with('sales')->where('kode_toko', $kode_toko)->first();
+
+        // Jika toko tidak ditemukan, kembalikan response error atau redirect
+        if (!$toko) {
+            return redirect()->back()->with('error', 'Toko tidak ditemukan.');
+        }
+
+        // Generate barcode
+        if ($toko) {
+            $barcode = DNS2D::getBarcodePNG((string) $toko->id_toko, 'QRCODE');
+        } else {
+            $barcode = null; // Atau tampilkan pesan error
+        }
+
+        // Tampilkan view dengan data toko dan barcode
+        return view('app.toko.app-cetak-toko', compact('toko', 'barcode'));
     }
+
+    public function appCetakPdfToko($id_toko)
+    {
+        // Mengambil data toko berdasarkan id_toko
+        $toko = Toko::with('sales')->where('id_toko', $id_toko)->get();
+
+        // Periksa apakah data toko ditemukan
+        if ($toko->isEmpty()) {
+            return response()->view('errors.no-data', [], 404);
+        }
+
+        // Load view dan generate PDF
+        $pdf = Pdf::loadView('app.toko.app-cetak-pdf-toko', compact('toko'))
+            ->setPaper('58mm', 'portrait');
+
+        // Kembalikan PDF dengan stream
+        return $pdf->stream('informasi.pdf', [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="informasi.pdf"'
+        ]);
+    }
+
 
     public function app_tambah_stok($id_toko)
     {
@@ -280,19 +341,21 @@ class AppController extends Controller
         return view('app.stok.app-tambah-stok', compact('sales', 'item', 'toko'));
     }
 
-    public function app_simpan_faktur_barang(Request $request) {
+    public function app_simpan_faktur_barang(Request $request)
+    {
         // Mendekode data JSON yang dikirim dari form
         $data = json_decode($request->input('data'), true);
-    
+
         // Tambahkan logging untuk memeriksa data yang diterima
         Log::info('Data received:', ['data' => $data]);
 
         // Buat kode faktur unik sekali untuk seluruh batch
-        $kodeFakturBarang = 'STB'.'.'.uniqid();
-    
+        $kodeFakturBarang = 'STB' . '.' . uniqid();
+
         if (is_array($data)) {
             foreach ($data as $item) {
-                if (is_array($item) &&
+                if (
+                    is_array($item) &&
                     isset($item['kodeItem']) && is_string($item['kodeItem']) &&
                     isset($item['namaItem']) && is_string($item['namaItem']) &&
                     isset($item['kodeToko']) && is_string($item['kodeToko']) &&
@@ -323,7 +386,7 @@ class AppController extends Controller
             Log::error('Invalid data format received:', ['data' => $data]);
             session()->flash('error', 'Data yang diberikan tidak valid.');
         }
-    
+
         return redirect()->route('app-toko-sales');
     }
 
@@ -334,7 +397,7 @@ class AppController extends Controller
         $faktur = Faktur::where('kode_sales', $sales)
             ->where('no_faktur_barang', $no_faktur_barang)
             ->get();
-        
+
         $no_faktur = Faktur::where('kode_sales', $sales)
             ->where('no_faktur_barang', $no_faktur_barang)
             ->first();
@@ -342,11 +405,13 @@ class AppController extends Controller
         $faktur_bayar = Faktur::where('kode_sales', $sales)
             ->where('no_faktur_barang', $no_faktur_barang)
             ->select(
-                'created_at','updated_at',
-                'no_faktur_barang', 
-                DB::raw('SUM(stok_toko) as total_stok_toko'), 
+                'created_at',
+                'updated_at',
+                'no_faktur_barang',
+                DB::raw('SUM(stok_toko) as total_stok_toko'),
                 DB::raw('SUM(total_harga) as total_harga'),
-                DB::raw('SUM(sisa_stok_toko) as total_sisa_stok_toko'))
+                DB::raw('SUM(sisa_stok_toko) as total_sisa_stok_toko')
+            )
             ->groupBy('no_faktur_barang', 'created_at', 'updated_at')
             ->get();
 
@@ -374,7 +439,7 @@ class AppController extends Controller
     public function appSaveTerjual(Request $request, $id_faktur)
     {
         $faktur = Faktur::find($request->id_faktur);
-        $faktur->no_faktur_bayar = 'FP-'.$request->no_faktur_terjual;
+        $faktur->no_faktur_bayar = 'FP-' . $request->no_faktur_terjual;
         $faktur->stok_terjual = $request->jumlah_terjual;
         //untuk menentukan harga berdasarkan diskon
         $faktur->total_bayar = $request->jumlah_terjual * $request->harga * ((100 - $request->diskon) / 100);
@@ -387,7 +452,7 @@ class AppController extends Controller
     public function appSaveReturn(Request $request, $id_faktur)
     {
         $faktur = Faktur::find($request->id_faktur);
-        $faktur->no_faktur_bayar = 'FP-'.$request->no_faktur_return;
+        $faktur->no_faktur_bayar = 'FP-' . $request->no_faktur_return;
         $faktur->stok_return = $request->jumlah_return;
         $faktur->sisa_stok_toko = $request->sisa_stok - $faktur->stok_return;
         $faktur->update();
@@ -397,7 +462,7 @@ class AppController extends Controller
 
     public function appProfile()
     {
-        $sales = Auth::guard('sales')->user()->kode_sales; 
+        $sales = Auth::guard('sales')->user()->kode_sales;
         $data = Sales::with('toko', 'faktur')->where('kode_sales', $sales)->first();
         $stok = StokSales::where('kode_sales', $sales)
             ->select(DB::raw('SUM(stok_sales) as total_stok_sales'))
@@ -407,23 +472,26 @@ class AppController extends Controller
             ->select(DB::raw('SUM(stok_terjual) as total_stok_terjual'))
             ->first();
 
-        
+
         //Mengambil data stok sales dan menghitung total stok serta penjualan terjual berdasarkan kode_sales
         $stok_sales = StokSales::leftJoin('faktur', 'stok_sales.kode_item', '=', 'faktur.kode_item')
-        ->where('stok_sales.kode_sales', '=', $sales) // Filter stok_sales berdasarkan kode_sales
-        ->where(function ($query) use ($sales) {
-            $query->where('faktur.kode_sales', '=', $sales)
-                ->orWhereNull('faktur.kode_sales');
-        })
-        ->select('stok_sales.kode_item', 'stok_sales.nama_item',
-            DB::raw('SUM(DISTINCT stok_sales.stok_sales) as total_stok_sales'),
-            DB::raw('SUM(faktur.stok_terjual) as total_stok_terjual'))
-        ->groupBy('stok_sales.kode_item', 'stok_sales.nama_item')
-        ->get();
+            ->where('stok_sales.kode_sales', '=', $sales) // Filter stok_sales berdasarkan kode_sales
+            ->where(function ($query) use ($sales) {
+                $query->where('faktur.kode_sales', '=', $sales)
+                    ->orWhereNull('faktur.kode_sales');
+            })
+            ->select(
+                'stok_sales.kode_item',
+                'stok_sales.nama_item',
+                DB::raw('SUM(DISTINCT stok_sales.stok_sales) as total_stok_sales'),
+                DB::raw('SUM(faktur.stok_terjual) as total_stok_terjual')
+            )
+            ->groupBy('stok_sales.kode_item', 'stok_sales.nama_item')
+            ->get();
 
-    
+
         return view('app.profile.app-profile', compact('data', 'stok_sales', 'stok', 'stok_terjual'));
-    }    
+    }
 
     public function cetak_faktur_barang($no_faktur_barang)
     {
@@ -432,7 +500,7 @@ class AppController extends Controller
         $faktur = Faktur::where('kode_sales', $sales)
             ->where('no_faktur_barang', $no_faktur_barang)
             ->get();
-        
+
         $no_faktur = Faktur::where('kode_sales', $sales)
             ->where('no_faktur_barang', $no_faktur_barang)
             ->first();
@@ -440,13 +508,14 @@ class AppController extends Controller
         $faktur_pembayaran = Faktur::where('kode_sales', $sales)
             ->where('no_faktur_barang', $no_faktur_barang)
             ->select(
-                'no_faktur_barang', 
-                DB::raw('SUM(stok_toko) as total_stok_toko'), 
+                'no_faktur_barang',
+                DB::raw('SUM(stok_toko) as total_stok_toko'),
                 DB::raw('SUM(total_harga) as total_harga'),
                 DB::raw('SUM(sisa_stok_toko) as total_sisa_stok_toko'),
                 DB::raw('SUM(stok_terjual) as total_stok_terjual'),
                 DB::raw('SUM(total_bayar) as total_bayar'),
-                DB::raw('SUM(stok_return) as total_return'))
+                DB::raw('SUM(stok_return) as total_return')
+            )
             ->groupBy('no_faktur_barang')
             ->get();
 
@@ -476,7 +545,7 @@ class AppController extends Controller
         $faktur = Faktur::where('kode_sales', $sales)
             ->where('no_faktur_barang', $no_faktur_barang)
             ->get();
-        
+
         $no_faktur = Faktur::where('kode_sales', $sales)
             ->where('no_faktur_barang', $no_faktur_barang)
             ->first();
@@ -484,13 +553,14 @@ class AppController extends Controller
         $faktur_pembayaran = Faktur::where('kode_sales', $sales)
             ->where('no_faktur_barang', $no_faktur_barang)
             ->select(
-                'no_faktur_barang', 
-                DB::raw('SUM(stok_toko) as total_stok_toko'), 
+                'no_faktur_barang',
+                DB::raw('SUM(stok_toko) as total_stok_toko'),
                 DB::raw('SUM(total_harga) as total_harga'),
                 DB::raw('SUM(sisa_stok_toko) as total_sisa_stok_toko'),
                 DB::raw('SUM(stok_terjual) as total_stok_terjual'),
                 DB::raw('SUM(total_bayar) as total_bayar'),
-                DB::raw('SUM(stok_return) as total_return'))
+                DB::raw('SUM(stok_return) as total_return')
+            )
             ->groupBy('no_faktur_barang')
             ->get();
 
@@ -528,20 +598,24 @@ class AppController extends Controller
         $faktur_pembayaran = Faktur::where('kode_sales', $sales)
             ->where('no_faktur_barang', $no_faktur_barang)
             ->select(
-                'no_faktur_barang', 
-                DB::raw('SUM(stok_toko) as total_stok_toko'), 
+                'no_faktur_barang',
+                DB::raw('SUM(stok_toko) as total_stok_toko'),
                 DB::raw('SUM(total_harga) as total_harga'),
                 DB::raw('SUM(sisa_stok_toko) as total_sisa_stok_toko'),
                 DB::raw('SUM(stok_terjual) as total_stok_terjual'),
                 DB::raw('SUM(total_bayar) as total_bayar'),
-                DB::raw('SUM(stok_return) as total_return'))
+                DB::raw('SUM(stok_return) as total_return')
+            )
             ->groupBy('no_faktur_barang')
             ->get();
 
-        // Siapkan data yang akan dikirimkan ke view
-        return view('app.faktur.app-cetak-faktur-barang', compact('faktur', 'no_faktur', 'faktur_pembayaran'));
+        // Query untuk mendapatkan id_toko berdasarkan kode_toko
+        $id_toko = Toko::where('kode_toko', $no_faktur->kode_toko)->value('id_toko');
+
+        // Kirimkan id_toko ke view bersama data lainnya
+        return view('app.faktur.app-cetak-faktur-barang', compact('faktur', 'no_faktur', 'faktur_pembayaran', 'id_toko'));
     }
- 
+
 
     public function app_cetak_faktur_pembayaran($no_faktur_barang)
     {
@@ -550,7 +624,7 @@ class AppController extends Controller
         $faktur = Faktur::where('kode_sales', $sales)
             ->where('no_faktur_barang', $no_faktur_barang)
             ->get();
-        
+
         $no_faktur = Faktur::where('kode_sales', $sales)
             ->where('no_faktur_barang', $no_faktur_barang)
             ->first();
@@ -558,21 +632,25 @@ class AppController extends Controller
         $faktur_pembayaran = Faktur::where('kode_sales', $sales)
             ->where('no_faktur_barang', $no_faktur_barang)
             ->select(
-                'no_faktur_barang', 
-                DB::raw('SUM(stok_toko) as total_stok_toko'), 
+                'no_faktur_barang',
+                DB::raw('SUM(stok_toko) as total_stok_toko'),
                 DB::raw('SUM(total_harga) as total_harga'),
                 DB::raw('SUM(sisa_stok_toko) as total_sisa_stok_toko'),
                 DB::raw('SUM(stok_terjual) as total_stok_terjual'),
                 DB::raw('SUM(total_bayar) as total_bayar'),
-                DB::raw('SUM(stok_return) as total_return'))
+                DB::raw('SUM(stok_return) as total_return')
+            )
             ->groupBy('no_faktur_barang')
             ->get();
 
-            // Siapkan data yang akan dikirimkan ke view
-            return view('app.faktur.app-cetak-faktur-bayar', compact('faktur', 'no_faktur', 'faktur_pembayaran'));
+        // Query untuk mendapatkan id_toko berdasarkan kode_toko
+        $id_toko = Toko::where('kode_toko', $no_faktur->kode_toko)->value('id_toko');
+
+        // Kirimkan id_toko ke view bersama data lainnya
+        return view('app.faktur.app-cetak-faktur-bayar', compact('faktur', 'no_faktur', 'faktur_pembayaran', 'id_toko'));
     }
 
-    public function appLogout (Request $request)
+    public function appLogout(Request $request)
     {
         Auth::logout();
         $request->session()->invalidate();

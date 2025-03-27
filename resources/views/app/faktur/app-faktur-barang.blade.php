@@ -11,7 +11,7 @@
     <div class="col-sm-12">
         <div class="panel panel-card">
             <div class="item">
-                <img src="{{ asset($barang->gambar_toko) }}" class="w-full r-t" style="max-width: 100%; max-height: 30%; height: auto;" />
+                <img src="{{ asset($barang->gambar_toko) }}" class="w-full r-t" style="max-width: 100%; height: 200px; object-fit: cover;" />
                 <div class="bottom text-white p">
                     <h3><b>{{$barang->nama_toko}}</b></h3>
                     <p>Kode. {{$barang->kode_toko}}</p>

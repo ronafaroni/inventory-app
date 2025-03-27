@@ -15,6 +15,7 @@ use App\Http\Controllers\KunjunganController;
 use App\Models\Kunjungan;
 use App\Models\Toko;
 use App\Http\Middleware\RedirectIfNotSales;
+use App\Http\Controllers\PrintController;
 
 // Route::get('/', function () {
 //     return view('login');
@@ -30,6 +31,8 @@ Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/login-sales', [LoginController::class, 'form_login_sales'])->name('login-sales');
 Route::post('/login-sales', [LoginController::class, 'authenticate_user']);
 Route::get('/logout-user', [LoginController::class, 'logout_user'])->name('logout-user');
+Route::get('/setting-profile', [UserController::class, 'setting_profile'])->name('setting-profile');
+Route::post('/update-profile/{id_user}', [UserController::class, 'update_profile'])->name('update-profile');
 
 //untuk menu admin
 Route::get('/admin', [AdminController::class, 'index'])->name('admin');
@@ -89,6 +92,7 @@ Route::post('/update-toko/{id_toko}', [TokoController::class, 'update_toko'])->n
 Route::delete('/delete-toko/{id_toko}', [TokoController::class, 'delete_toko'])->name('delete-toko')->middleware(['auth', 'admin']);
 Route::get('/download-barcode/{id_toko}', [TokoController::class, 'download_barcode'])->name('download-barcode')->middleware(['auth', 'admin']);
 Route::get('/detail-toko/{id_toko}', [TokoController::class, 'detail_toko'])->name('detail-toko')->middleware(['auth', 'admin']);
+Route::get('/download-barcode-toko/{id_toko}', [TokoController::class, 'download_barcode_toko'])->name('download-barcode-toko')->middleware(['auth', 'admin']);
 
 //untuk menu transaksi
 Route::get('/harga', [TransaksiController::class, 'harga'])->name('harga')->middleware(['auth', 'admin']);
@@ -106,6 +110,7 @@ Route::post('/update-faktur-bayar/{id_faktur}', [TransaksiController::class, 'up
 Route::get('/report-penjualan', [TransaksiController::class, 'report_penjualan'])->name('report-penjualan')->middleware(['auth', 'admin']);
 Route::get('/export-penjualan', [TransaksiController::class, 'exportPenjualan'])->name('export-penjualan');
 
+Route::get('/kunjungan-details/{kode_sales}', [KunjunganController::class, 'getDetails']);
 
 //untuk tampilan user
 Route::get('/users', [UserController::class, 'users'])->name('users');
@@ -137,7 +142,10 @@ Route::middleware(['sales'])->group(function () {
     Route::get('/app-edit-toko/{id_toko}', [AppController::class, 'appEditToko'])->name('app-edit-toko');
     Route::post('/app-update-toko/{id_toko}', [AppController::class, 'appUpdateToko'])->name('app-update-toko');
     Route::delete('/app-delete-toko/{id_toko}', [AppController::class, 'appDeleteToko'])->name('app-delete-toko');
-    Route::get('/app-cetak-toko/{id_toko}', [AppController::class, 'appCetakToko'])->name('app-cetak-toko');
+    Route::get('/app-cetak-toko/{kode_toko}', [AppController::class, 'appCetakToko'])->name('app-cetak-toko');
+    // Route::get('/app-cetak-pdf-toko/{id_toko}', [AppController::class, 'appCetakPdfToko'])->name('app-cetak-pdf-toko');
+    Route::get('/app-cetak-pdf-toko/{id_toko}', [AppController::class, 'appCetakPdfToko'])->name('app-cetak-pdf-toko');
+
 
     Route::get('/app-tambah-stok/{id_toko}', [AppController::class, 'app_tambah_stok'])->name('app-tambah-stok');
     Route::post('/app-simpan-stok', [AppController::class, 'app_simpan_stok'])->name('app-simpan-stok');
@@ -152,7 +160,7 @@ Route::middleware(['sales'])->group(function () {
     Route::get('/app-cetak-faktur-barang/{no_faktur_barang}', [AppController::class, 'app_cetak_faktur_barang'])->name('app-cetak-faktur-barang');
     Route::get('/app-cetak-faktur-pembayaran/{no_faktur_barang}', [AppController::class, 'app_cetak_faktur_pembayaran'])->name('app-cetak-faktur-pembayaran');
 
-    Route::get('/app-profile', [AppController::class, 'appProfile'])->name('app-profile'); 
+    Route::get('/app-profile', [AppController::class, 'appProfile'])->name('app-profile');
 
     Route::get('/app-kunjungan', [KunjunganController::class, 'appKunjungan'])->name('app-kunjungan');
     Route::post('/app-simpan-kunjungan', [KunjunganController::class, 'appSimpanKunjungan'])->name('app-simpan-kunjungan');
@@ -162,3 +170,5 @@ Route::middleware(['sales'])->group(function () {
 });
 
 Route::get('/app-logout', [AppController::class, 'appLogout'])->name('app-logout');
+
+Route::get('/get-receipt-data', [PrintController::class, 'getReceiptData']);

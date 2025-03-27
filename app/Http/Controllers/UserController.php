@@ -1,17 +1,19 @@
 <?php
 
 namespace App\Http\Controllers;
- 
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Sales;
 use App\Models\Toko;
 use App\Models\Item;
-use App\Models\harga;
+use App\Models\Harga;
 use App\Models\Faktur;
+use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
 use DNS1D;
 
 class UserController extends Controller
@@ -51,28 +53,30 @@ class UserController extends Controller
 
     public function simpan_toko_sales(Request $request)
     {
-        $request->validate([
-            'kode_toko' => 'required',
-            'nama_toko' => 'required',
-            'pemilik_toko' => 'required',
-            'no_telp' => 'required',
-            'alamat' => 'required',
-            'link_gmap' => 'required',
-            'gambar_toko' => 'required',
-        ],
-        [
-            'kode_toko.required' => 'Kode Toko harus diisi.',
-            'nama_toko.required' => 'Nama harus diisi.',
-            'pemilik_toko.required' => 'Pemilik Toko harus diisi.',
-            'no_telp.required' => 'Nomor Telepon harus diisi.',
-            'alamat.required' => 'Alamat harus diisi.',
-            'link_gmap.required' => 'Link Google Maps harus diisi.',
-            'kode_sales.required' => 'Kode Sales harus diisi.',
-            'gambar_toko.required' => 'Gambar Toko harus diisi.',
-        ]);
+        $request->validate(
+            [
+                'kode_toko' => 'required',
+                'nama_toko' => 'required',
+                'pemilik_toko' => 'required',
+                'no_telp' => 'required',
+                'alamat' => 'required',
+                'link_gmap' => 'required',
+                'gambar_toko' => 'required',
+            ],
+            [
+                'kode_toko.required' => 'Kode Toko harus diisi.',
+                'nama_toko.required' => 'Nama harus diisi.',
+                'pemilik_toko.required' => 'Pemilik Toko harus diisi.',
+                'no_telp.required' => 'Nomor Telepon harus diisi.',
+                'alamat.required' => 'Alamat harus diisi.',
+                'link_gmap.required' => 'Link Google Maps harus diisi.',
+                'kode_sales.required' => 'Kode Sales harus diisi.',
+                'gambar_toko.required' => 'Gambar Toko harus diisi.',
+            ]
+        );
 
         //Membuat barcode
-        $barcode = 'BC'.time();  // Generate unique barcode
+        $barcode = 'BC' . time();  // Generate unique barcode
 
         // Proses upload file
         $file = $request->file('gambar_toko');
@@ -133,19 +137,21 @@ class UserController extends Controller
     }
 
 
-    public function simpan_faktur_barang(Request $request) {
+    public function simpan_faktur_barang(Request $request)
+    {
         // Mendekode data JSON yang dikirim dari form
         $data = json_decode($request->input('data'), true);
-    
+
         // Tambahkan logging untuk memeriksa data yang diterima
         Log::info('Data received:', ['data' => $data]);
 
         // Buat kode faktur unik sekali untuk seluruh batch
-        $kodeFakturBarang = 'STB'.'.'.uniqid();
-    
+        $kodeFakturBarang = 'STB' . '.' . uniqid();
+
         if (is_array($data)) {
             foreach ($data as $item) {
-                if (is_array($item) &&
+                if (
+                    is_array($item) &&
                     isset($item['kodeItem']) && is_string($item['kodeItem']) &&
                     isset($item['namaItem']) && is_string($item['namaItem']) &&
                     isset($item['kodeToko']) && is_string($item['kodeToko']) &&
@@ -176,24 +182,26 @@ class UserController extends Controller
             Log::error('Invalid data format received:', ['data' => $data]);
             session()->flash('error', 'Data yang diberikan tidak valid.');
         }
-    
+
         return redirect()->route('toko-sales');
     }
 
     public function faktur_barang($kode_toko)
     {
         $sales = Auth::guard('sales')->user()->kode_sales;
-        
+
         $barang = Toko::where('kode_toko', $kode_toko)->first();
 
         $faktur = Faktur::where('kode_sales', $sales)
             ->where('kode_toko', $kode_toko)
             ->select(
-                'created_at','updated_at',
-                'no_faktur_barang', 
-                DB::raw('SUM(stok_toko) as total_stok_toko'), 
+                'created_at',
+                'updated_at',
+                'no_faktur_barang',
+                DB::raw('SUM(stok_toko) as total_stok_toko'),
                 DB::raw('SUM(total_harga) as total_harga'),
-                DB::raw('SUM(sisa_stok_toko) as total_sisa_stok_toko'))
+                DB::raw('SUM(sisa_stok_toko) as total_sisa_stok_toko')
+            )
 
             ->groupBy('no_faktur_barang', 'created_at', 'updated_at')
             ->get();
@@ -208,7 +216,7 @@ class UserController extends Controller
         $faktur = Faktur::where('kode_sales', $sales)
             ->where('no_faktur_barang', $no_faktur_barang)
             ->get();
-        
+
         $no_faktur = Faktur::where('kode_sales', $sales)
             ->where('no_faktur_barang', $no_faktur_barang)
             ->first();
@@ -216,10 +224,11 @@ class UserController extends Controller
         $faktur_pembayaran = Faktur::where('kode_sales', $sales)
             ->where('no_faktur_barang', $no_faktur_barang)
             ->select(
-                'no_faktur_barang', 
-                DB::raw('SUM(stok_toko) as total_stok_toko'), 
+                'no_faktur_barang',
+                DB::raw('SUM(stok_toko) as total_stok_toko'),
                 DB::raw('SUM(total_harga) as total_harga'),
-                DB::raw('SUM(sisa_stok_toko) as total_sisa_stok_toko'))
+                DB::raw('SUM(sisa_stok_toko) as total_sisa_stok_toko')
+            )
             ->groupBy('no_faktur_barang')
             ->get();
 
@@ -233,7 +242,7 @@ class UserController extends Controller
         $faktur = Faktur::where('kode_sales', $sales)
             ->where('no_faktur_barang', $no_faktur_barang)
             ->get();
-        
+
         $no_faktur = Faktur::where('kode_sales', $sales)
             ->where('no_faktur_barang', $no_faktur_barang)
             ->first();
@@ -241,11 +250,13 @@ class UserController extends Controller
         $faktur_bayar = Faktur::where('kode_sales', $sales)
             ->where('no_faktur_barang', $no_faktur_barang)
             ->select(
-                'created_at','updated_at',
-                'no_faktur_barang', 
-                DB::raw('SUM(stok_toko) as total_stok_toko'), 
+                'created_at',
+                'updated_at',
+                'no_faktur_barang',
+                DB::raw('SUM(stok_toko) as total_stok_toko'),
                 DB::raw('SUM(total_harga) as total_harga'),
-                DB::raw('SUM(sisa_stok_toko) as total_sisa_stok_toko'))
+                DB::raw('SUM(sisa_stok_toko) as total_sisa_stok_toko')
+            )
             ->groupBy('no_faktur_barang', 'created_at', 'updated_at')
             ->get();
 
@@ -255,7 +266,7 @@ class UserController extends Controller
     public function saveTerjual(Request $request, $id_faktur)
     {
         $faktur = Faktur::find($request->id_faktur);
-        $faktur->no_faktur_bayar = 'FP-'.$request->no_faktur_terjual;
+        $faktur->no_faktur_bayar = 'FP-' . $request->no_faktur_terjual;
         $faktur->stok_terjual = $request->jumlah_terjual;
         //untuk menentukan harga berdasarkan diskon
         $faktur->total_bayar = $request->jumlah_terjual * $request->harga * ((100 - $request->diskon) / 100);
@@ -266,13 +277,13 @@ class UserController extends Controller
     public function saveReturn(Request $request, $id_faktur)
     {
         $faktur = Faktur::find($request->id_faktur);
-        $faktur->no_faktur_bayar = 'FP-'.$request->no_faktur_return;
+        $faktur->no_faktur_bayar = 'FP-' . $request->no_faktur_return;
         $faktur->stok_return = $request->jumlah_return;
         $faktur->sisa_stok_toko = $request->sisa_stok - $faktur->stok_return;
         $faktur->update();
     }
 
-    
+
     public function kunjungan()
     {
         return view('user.kunjungan');
@@ -281,6 +292,32 @@ class UserController extends Controller
     public function profile()
     {
         return view('user.profile');
+    }
+
+    public function setting_profile()
+    {
+        $user = User::where('id', Auth::user()->id)->first();
+        return view('user.setting-profile', compact('user'));
+    }
+
+    public function update_profile(Request $request, $id_user)
+    {
+
+        $user = User::find($id_user); // Cari user berdasarkan ID
+        if ($user) {
+            // Periksa apakah password baru sama dengan yang lama
+            if (Hash::check($request->password, $user->password)) {
+                return back()->with('error', 'Password tidak boleh sama dengan sebelumnya.');
+            }
+
+            // Jika password berbeda, enkripsi & simpan
+            $user->password = Hash::make($request->password);
+            $user->updated_at = now();
+            $user->save();
+
+            return back()->with('success', 'Password berhasil diperbarui.');
+        }
+
     }
 
 }

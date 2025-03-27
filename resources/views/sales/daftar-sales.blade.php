@@ -49,6 +49,7 @@
                                     <th>Jumlah Penjualan</th>
                                     <th>Pencapaian</th>
                                     <th class="no-sort">Action</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -107,6 +108,11 @@
                                             <button {{ route('delete-sales', $data->id_sales) }} class="btn btn-import me-2" onclick="return confirm('Apakah anda yakin ingin menghapus sales ?')"><span><i class="fa fa-trash me-1"></i></span></button>
                                         </form>
                                     </td>
+                                    <td>
+                                        <button class="btn btn-greys btn-sm" data-kode_sales="{{ $data->kode_sales }}" data-bs-toggle="modal" data-bs-target="#kunjunganModal">
+                                            Lihat Kunjungan
+                                        </button>
+                                    </td>    
                                 </tr>
                                 @endforeach
                             </tbody>
@@ -116,5 +122,45 @@
             </div>
         </div>
     </div>
+
+<!-- Modal HTML -->
+<div class="modal fade" id="kunjunganModal" tabindex="-1" aria-labelledby="kunjunganModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="kunjunganModalLabel">Detail Kunjungan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="kunjungan-details">
+                <!-- Konten detail kunjungan akan dimuat di sini -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#kunjunganModal').on('show.bs.modal', function (e) {
+            var button = $(e.relatedTarget); // Tombol yang memicu modal
+            var kodeSales = button.data('kode_sales'); // Ambil ID dari data-id
+
+            // Memuat data kunjungan melalui AJAX
+            $.ajax({
+                url: '/kunjungan-details/' + kodeSales,
+                type: 'GET',
+                success: function(response) {
+                    $('#kunjungan-details').html(response); // Tampilkan data di dalam modal
+                },
+                error: function(xhr) {
+                    console.error(xhr.responseText);
+                }
+            });
+        });
+    });
+</script>
 
 @endsection()

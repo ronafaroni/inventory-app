@@ -33,7 +33,8 @@ class Faktur extends Model
     // {
     //     return $this->belongsTo(Toko::class, 'kode_toko', 'kode_sales');
     // }
-
+    
+    
     public function toko()
     {
         return $this->belongsTo(Toko::class, 'kode_toko', 'kode_toko');

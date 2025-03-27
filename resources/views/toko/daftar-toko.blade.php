@@ -26,19 +26,20 @@
                         <a class="btn-filters" href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Print"><span><i class="fe fe-printer"></i></span> </a>
                     </li> --}}
                     <li>
-                        <a class="btn btn-primary" href="{{ route('tambah-toko') }}"><i class="fa fa-plus-circle me-2" aria-hidden="true"></i>Tambah Toko</a>
+                        <a class="btn btn-primary" href="{{ route('tambah-toko') }}"><i class="fa fa-plus-circle me-2"
+                                aria-hidden="true"></i>Tambah Toko</a>
                     </li>
                 </ul>
             </div>
         </div>
     </div>
     <!-- /Page Header -->
-    
+
     <div class="row">
         <div class="col-sm-12">
             <div class="card-table">
                 <div class="card-body">
-                    @if(session('success'))
+                    @if (session('success'))
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
                             <strong>Selamat! </strong> {{ session('success') }}
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -58,7 +59,7 @@
                         <table class="table table-center table-hover datatable">
                             <thead class="thead-light">
                                 <tr>
-                                    <th>#</th> 
+                                    <th>#</th>
                                     <th>Kode Toko</th>
                                     <th>Nama Toko</th>
                                     <th>Stok (pcs)</th>
@@ -76,58 +77,72 @@
                                 @endphp
 
                                 @foreach ($toko as $data)
-                                <tr>
-                                    <td>{{ $no++ }}</td>
-                                    <td>{{ $data->kode_toko }}</td>
-                                    <td>
-                                        <h2 class="table-avatar">
-                                            {{-- <a href="{{ route('edit-toko', $data->id_toko) }}">{{ $data->nama_toko }}</a> --}}
-                                            <a href="{{ route('detail-toko', $data->kode_toko) }}">{{ $data->nama_toko }}</a>
-                                        </h2>
-                                    </td>
-                                    <td>{{ number_format($data->faktur->sum('stok_toko') - $data->faktur->sum('stok_terjual'), 0, ',', '.') }}</td>
-                                    <td>{{ number_format($data->faktur->sum('stok_terjual'), 0, ',', '.') }}</td>
-                                    <td>{{ number_format($data->faktur->sum('stok_return'), 0, ',', '.') }}</td>
-                                    <td>{{ $data->sales ? $data->sales->nama_sales : '-' }}</td>
-                                    @php
-                                        $kunjunganPerMinggu = $data->kunjungan->filter(function ($kunjungan) {
-                                            return \Carbon\Carbon::parse($kunjungan->created_at)->isSameWeek(\Carbon\Carbon::now());
-                                        })->count();
-                                    @endphp
+                                    <tr>
+                                        <td>{{ $no++ }}</td>
+                                        <td>{{ $data->kode_toko }}</td>
+                                        <td>
+                                            <h2 class="table-avatar">
+                                                {{-- <a href="{{ route('edit-toko', $data->id_toko) }}">{{ $data->nama_toko }}</a> --}}
+                                                <a
+                                                    href="{{ route('detail-toko', $data->kode_toko) }}">{{ $data->nama_toko }}</a>
+                                            </h2>
+                                        </td>
+                                        <td>{{ number_format($data->faktur->sum('stok_toko') - $data->faktur->sum('stok_terjual'), 0, ',', '.') }}
+                                        </td>
+                                        <td>{{ number_format($data->faktur->sum('stok_terjual'), 0, ',', '.') }}</td>
+                                        <td>{{ number_format($data->faktur->sum('stok_return'), 0, ',', '.') }}</td>
+                                        <td>{{ $data->sales ? $data->sales->nama_sales : '-' }}</td>
+                                        @php
+                                            $kunjunganPerMinggu = $data->kunjungan
+                                                ->filter(function ($kunjungan) {
+                                                    return \Carbon\Carbon::parse($kunjungan->created_at)->isSameWeek(
+                                                        \Carbon\Carbon::now(),
+                                                    );
+                                                })
+                                                ->count();
+                                        @endphp
 
-                                    <td>{{ $data->kunjungan->count() }} / {{ $kunjunganPerMinggu }}</td>
+                                        <td>{{ $data->kunjungan->count() }} / {{ $kunjunganPerMinggu }}</td>
 
-                                    <td>
-                                        @if ($data->pencapaian > 0 && $data->pencapaian == '' && $data->pencapaian == null)
-                                            <i class="fa fa-star"></i>
-                                        @elseif ($data->pencapaian == '1')
-                                            <i class="fa fa-star"></i>
-                                        @elseif ($data->pencapaian == '2')
-                                            <i class="fa fa-star"></i> <i class="fa fa-star"></i>
-                                        @elseif ($data->pencapaian == '3')
-                                            <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i>
-                                        @elseif ($data->pencapaian == '4')
-                                            <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i>
-                                        @elseif ($data->pencapaian == '5')
-                                            <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i class="fa fa-star"></i>
-                                        @endif
-                                    </td>
-                                    <td class="d-flex">
-                                        <form action="{{ route('delete-toko', $data->id_toko) }}" method="POST">
-                                            @csrf 
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-import m-2" onclick="return confirm('Apakah anda yakin ingin menghapus data toko ?')">
-                                                <span><i class="fa fa-trash-alt"></i></span>
-                                            </button>
-                                        </form> 
-                                        <form action="{{ route('download-barcode', $data->id_toko) }}" method="GET">
-                                            @csrf
-                                            <button type="submit" class="btn btn-import m-2">
-                                                <span><i class="fa fa-download"></i> Barcode</span>
-                                            </button>
-                                        </form>
-                                    </td>                                    
-                                </tr>
+                                        <td>
+                                            @if ($data->pencapaian > 0 && $data->pencapaian == '' && $data->pencapaian == null)
+                                                <i class="fa fa-star"></i>
+                                            @elseif ($data->pencapaian == '1')
+                                                <i class="fa fa-star"></i>
+                                            @elseif ($data->pencapaian == '2')
+                                                <i class="fa fa-star"></i> <i class="fa fa-star"></i>
+                                            @elseif ($data->pencapaian == '3')
+                                                <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i
+                                                    class="fa fa-star"></i>
+                                            @elseif ($data->pencapaian == '4')
+                                                <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i
+                                                    class="fa fa-star"></i> <i class="fa fa-star"></i>
+                                            @elseif ($data->pencapaian == '5')
+                                                <i class="fa fa-star"></i> <i class="fa fa-star"></i> <i
+                                                    class="fa fa-star"></i> <i class="fa fa-star"></i> <i
+                                                    class="fa fa-star"></i>
+                                            @endif
+                                        </td>
+                                        <td class="d-flex">
+                                            <form action="{{ route('delete-toko', $data->id_toko) }}" method="POST">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-import m-2"
+                                                    onclick="return confirm('Apakah anda yakin ingin menghapus data toko ?')">
+                                                    <span><i class="fa fa-trash-alt"></i></span>
+                                                </button>
+                                            </form>
+                                            <form action="{{ route('download-barcode-toko', $data->id_toko) }}"
+                                                method="GET" target="_blank">
+                                                @csrf
+                                                <button type="submit"
+                                                    class="btn btn-import m-2 d-flex align-items-center gap-2">
+                                                    <i class="fa fa-download"></i> Barcode
+                                                </button>
+                                            </form>
+
+                                        </td>
+                                    </tr>
                                 @endforeach
                             </tbody>
                         </table>
@@ -136,5 +151,4 @@
             </div>
         </div>
     </div>
-
 @endsection

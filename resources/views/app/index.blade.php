@@ -77,7 +77,7 @@
       <ul class="nav nav-sm navbar-tool pull-right">
 
         <li>
-          <a href="{{ route('app-logout') }}">
+          <a href="{{ route('app-logout') }}" onclick="return confirm('Yakin ingin Keluar?')">
             <i class="mdi-action-exit-to-app i-24"></i>
           </a>
         </li>

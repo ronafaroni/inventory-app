@@ -40,6 +40,12 @@ class Sales extends Model implements AuthenticatableContract
     {
         return $this->belongsTo(Toko::class, 'kode_toko');
     }
+    
+    public function toko2()
+{
+    return $this->belongsTo(Toko::class, 'kode_toko', 'kode_toko');
+}
+
 
     public function faktur1()
     {

@@ -13,7 +13,9 @@
                         </div>
                         <br>
                         <div class="col-md-3">
-                            <a href="{{ route('app-cetak-faktur-barang', $no_faktur->no_faktur_barang) }}" class="btn btn-addon btn-info waves-effect"><i class="mdi-action-print"></i>Cetak Faktur Barang</a>
+                            <a href="{{ route('app-cetak-faktur-barang', $no_faktur->no_faktur_barang) }}" target="_blank" class="btn btn-addon btn-info waves-effect">
+                                <i class="mdi mdi-action-print" aria-hidden="true"></i> Cetak Faktur Barang
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -83,11 +85,36 @@
                     @endif
                 @endforeach
             </div>
-            
-            
         </div>
     </div>
 </div>
+<script>
+    function handlePrint(url) {
+    fetch(url)
+        .then(response => response.text())
+        .then(data => {
+            const iframe = document.createElement('iframe');
+            iframe.style.position = 'fixed';
+            iframe.style.width = '100%';  // Sesuaikan ukuran iframe
+            iframe.style.height = '100%'; // Sesuaikan ukuran iframe
+            iframe.style.border = 'none';
+            document.body.appendChild(iframe);
 
+            iframe.contentDocument.open();
+            iframe.contentDocument.write(data);
+            iframe.contentDocument.close();
+
+            iframe.contentWindow.focus();
+            setTimeout(() => {
+                iframe.contentWindow.print();
+                document.body.removeChild(iframe);
+            }, 1000);
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+}
+
+</script>
 
 @endsection

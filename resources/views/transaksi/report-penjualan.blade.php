@@ -55,12 +55,12 @@
                                 @foreach ($faktur_bayar as $item)
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $item->sales->kode_sales }}</td>
-                                    <td>{{ $item->sales->nama_sales }}</td>
-                                    <td>{{ $item->toko->kode_toko }}</td>
-                                    <td>{{ $item->toko->nama_toko }}</td>
-                                    <td>{{ $item->item->kode_item }}</td>
-                                    <td>{{ $item->item->nama_item }}</td>
+                                    <td>{{ $item->sales?->kode_sales }}</td>
+                                    <td>{{ $item->sales?->nama_sales }}</td>
+                                    <td>{{ $item->toko?->kode_toko }}</td> <!-- Akses langsung dari $item -->
+                                    <td>{{ $item->toko?->nama_toko }}</td>
+                                    <td>{{ $item->item?->kode_item }}</td>
+                                    <td>{{ $item->item?->nama_item }}</td>
                                     <td>{{ number_format($item->total_terjual) }}</td>
                                     <td>{{ number_format($item->total_bayar) }}</td>
                                 </tr>

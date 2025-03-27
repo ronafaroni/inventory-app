@@ -71,21 +71,32 @@
         <nav class="navbar navbar-light bg-light navbar-expand fixed-bottom navbar-shadow">
             <div class="container-fluid">
                 <ul class="navbar-nav nav-justified w-100">
-                    <li class="nav-item">
+                    <div class="col-md-3">
+                            <li class="nav-item">
                         <a class="nav-link text-center" href="{{ route('toko-sales') }}">
                             <i class="fe fe-home"></i><br>Toko
                         </a>
                     </li>
-                    <li class="nav-item">
+                    </div>
+                    <div class="col-md-3">
+                            <li class="nav-item">
                         <a class="nav-link text-center" href="{{ route('kunjungan') }}">
                             <i class="fe fe-shopping-cart"></i><br>Kunjungan
                         </a>
                     </li>
-                    <li class="nav-item">
+                    </div>
+                    <div class="col-md-3">
+                              <li class="nav-item">
                         <a class="nav-link text-center" href="{{ route('profile') }}">
                             <i class="fe fe-user"></i><br>Profile
                         </a>
                     </li>
+                    
+                    </div>
+                    <div class="col-md-3">
+                        
+                    </div>
+              
                 </ul>
             </div>
         </nav>

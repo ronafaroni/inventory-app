@@ -19,7 +19,7 @@ class PenjualanExport implements FromCollection, WithHeadings, WithMapping, With
     */
     public function collection()
     {
-        return Faktur::with(['sales.toko', 'item'])
+        return Faktur::with(['sales.toko2', 'item'])
             ->select(
                 'kode_sales', 
                 'kode_toko', 
@@ -36,8 +36,8 @@ class PenjualanExport implements FromCollection, WithHeadings, WithMapping, With
         return [
             $faktur->sales->kode_sales,
             $faktur->sales->nama_sales,
-            $faktur->toko->kode_toko,
-            $faktur->toko->nama_toko,
+            $faktur->toko?->kode_toko,
+            $faktur->toko?->nama_toko,
             $faktur->item->kode_item,
             $faktur->item->nama_item,
             $faktur->total_terjual,

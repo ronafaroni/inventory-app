@@ -26,21 +26,23 @@ class SalesController extends Controller
     }
     public function daftar_sales()
     {
-        $sales_data = Sales::with('faktur','kunjungan')->get();
+        $sales_data = Sales::with('faktur', 'kunjungan')->get();
         return view('sales.daftar-sales', compact('sales_data'));
     }
 
     public function detail_sales($kode_sales)
     {
-        $sales = Sales::with('stokSales', 'faktur', 'toko')->where('kode_sales',$kode_sales)->get();
-        
-        $detail = StokSales::with(['faktur' => function($query) use ($kode_sales) {
-            $query->where('kode_sales', $kode_sales);
-        }])
-        ->where('kode_sales', $kode_sales)
-        ->select('kode_item', 'nama_item', DB::raw('SUM(stok_sales) as total_stok_sales'))
-        ->groupBy('kode_item', 'nama_item')
-        ->get();
+        $sales = Sales::with('stokSales', 'faktur', 'toko')->where('kode_sales', $kode_sales)->get();
+
+        $detail = StokSales::with([
+            'faktur' => function ($query) use ($kode_sales) {
+                $query->where('kode_sales', $kode_sales);
+            }
+        ])
+            ->where('kode_sales', $kode_sales)
+            ->select('kode_item', 'nama_item', DB::raw('SUM(stok_sales) as total_stok_sales'))
+            ->groupBy('kode_item', 'nama_item')
+            ->get();
 
         return view('sales/detail-sales', compact('sales', 'detail'));
     }
@@ -56,7 +58,7 @@ class SalesController extends Controller
     {
         $data_item = Item::all();
         $data_sales = Sales::findOrFail($id_sales);
-        return view('sales/tambah-stok-masuk', compact('data_sales','data_item'));
+        return view('sales/tambah-stok-masuk', compact('data_sales', 'data_item'));
     }
     public function return_stok_sales($id_sales)
     {
@@ -65,9 +67,9 @@ class SalesController extends Controller
 
         // Mengambil dan mengelompokkan data item berdasarkan kode_sales dari data_sales
         $data_item = StokSales::where('kode_sales', $data_sales->kode_sales)
-        ->select('kode_item', DB::raw('MAX(nama_item) as nama_item'))
-        ->groupBy('kode_item')
-        ->get();
+            ->select('kode_item', DB::raw('MAX(nama_item) as nama_item'))
+            ->groupBy('kode_item')
+            ->get();
 
         return view('sales.return-stok-sales', compact('data_sales', 'data_item'));
     }
@@ -75,7 +77,7 @@ class SalesController extends Controller
     {
         $data_sales = Sales::all();
         $data_item = Item::all();
-        return view('sales/tambah-stok-sales', compact('data_sales','data_item'));
+        return view('sales/tambah-stok-sales', compact('data_sales', 'data_item'));
     }
 
     public function riwayat_sales()
@@ -95,32 +97,36 @@ class SalesController extends Controller
         return view('sales.riwayat-return-stok-sales', compact('riwayat_return_stok'));
     }
 
-    public function tambah_return_stok(){
+    public function tambah_return_stok()
+    {
         $data_sales = Sales::all();
         $data_item = Item::all();
-        return view('sales/tambah-return-stok', compact('data_sales','data_item'));
+        return view('sales/tambah-return-stok', compact('data_sales', 'data_item'));
     }
 
     // Simpan Item
-    public function kirim_sales(Request $request){
-    
+    public function kirim_sales(Request $request)
+    {
+
         $sales = Sales::all();
-        $validated = $request->validate([
-            'kode_sales' => 'required|unique:sales,kode_sales',
-            'nama_sales' => 'required',
-            'alamat' => 'required',
-            'no_telp' => 'required',
-            'username' => 'required',
-            'password' => 'required',
-            'foto' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:5000'
-        ],
-        [
-            'unique' => 'Kolom :attribute sudah ada.',
-            'required' => 'Kolom :attribute wajib diisi.',
-            'image' => 'Kolom :attribute harus berupa gambar.',
-            'mimes' => 'Kolom :attribute harus memiliki format file :values.',
-            'max' => 'Kolom :attribute tidak boleh lebih dari :max kb.'
-        ]);
+        $validated = $request->validate(
+            [
+                'kode_sales' => 'required|unique:sales,kode_sales',
+                'nama_sales' => 'required',
+                'alamat' => 'required',
+                'no_telp' => 'required',
+                'username' => 'required',
+                'password' => 'required',
+                'foto' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:5000'
+            ],
+            [
+                'unique' => 'Kolom :attribute sudah ada.',
+                'required' => 'Kolom :attribute wajib diisi.',
+                'image' => 'Kolom :attribute harus berupa gambar.',
+                'mimes' => 'Kolom :attribute harus memiliki format file :values.',
+                'max' => 'Kolom :attribute tidak boleh lebih dari :max kb.'
+            ]
+        );
 
         // Proses upload file
         $file = $request->file('foto');
@@ -141,7 +147,7 @@ class SalesController extends Controller
         $sales->foto = $tujuan_upload . $nama_file;
         $sales->pencapaian = 1;
         $sales->save();
-    
+
         // Redirect ke halaman daftar item
         session()->flash('success', 'Sales baru ditambahkan');
 
@@ -149,66 +155,67 @@ class SalesController extends Controller
 
     }
 
-public function update_sales(Request $request, $id_sales)
-{
-    // Cari sales berdasarkan ID
-    $sales = Sales::findOrFail($id_sales);
+    public function update_sales(Request $request, $id_sales)
+    {
+        // Cari sales berdasarkan ID
+        $sales = Sales::findOrFail($id_sales);
 
-    // Validasi input
-    $validated = $request->validate([
-        'kode_sales' => [
-            'required',
-            Rule::unique('sales', 'kode_sales')->ignore($sales->kode_sales, 'kode_sales'),
-        ],
-        'nama_sales' => 'required',
-        'alamat' => 'required',
-        'no_telp' => 'required',
-        'username' => 'required',
-        'password' => 'nullable', // Password hanya perlu validasi jika ada input
-        'foto' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:5000' // Foto opsional
-    ], [
-        'unique' => 'Kolom :attribute sudah ada.',
-        'required' => 'Kolom :attribute wajib diisi.',
-        'nullable' => 'Kolom :attribute tidak wajib diisi.',
-        'image' => 'Kolom :attribute harus berupa gambar.',
-        'mimes' => 'Kolom :attribute harus memiliki format file :values.',
-        'max' => 'Kolom :attribute tidak boleh lebih dari :max kb.',
-        'min' => 'Kolom :attribute harus memiliki minimal :min karakter.'
-    ]);
+        // Validasi input
+        $validated = $request->validate([
+            'kode_sales' => [
+                'required',
+                Rule::unique('sales', 'kode_sales')->ignore($sales->kode_sales, 'kode_sales'),
+            ],
+            'nama_sales' => 'required',
+            'alamat' => 'required',
+            'no_telp' => 'required',
+            'username' => 'required',
+            'password' => 'nullable', // Password hanya perlu validasi jika ada input
+            'foto' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:5000' // Foto opsional
+        ], [
+            'unique' => 'Kolom :attribute sudah ada.',
+            'required' => 'Kolom :attribute wajib diisi.',
+            'nullable' => 'Kolom :attribute tidak wajib diisi.',
+            'image' => 'Kolom :attribute harus berupa gambar.',
+            'mimes' => 'Kolom :attribute harus memiliki format file :values.',
+            'max' => 'Kolom :attribute tidak boleh lebih dari :max kb.',
+            'min' => 'Kolom :attribute harus memiliki minimal :min karakter.'
+        ]);
 
-    // Proses upload file jika ada gambar baru
-    if ($request->hasFile('foto')) {
-        $file = $request->file('foto');
-        $nama_file = $request->input('nama_sales') . '.' . $file->getClientOriginalExtension();
-        $tujuan_upload = '/uploads/sales/';
-        $file->move(public_path($tujuan_upload), $nama_file);
-        $sales->foto = $tujuan_upload . $nama_file;
+        // Proses upload file jika ada gambar baru
+        if ($request->hasFile('foto')) {
+            $file = $request->file('foto');
+            $nama_file = $request->input('nama_sales') . '.' . $file->getClientOriginalExtension();
+            $tujuan_upload = '/uploads/sales/';
+            $file->move(public_path($tujuan_upload), $nama_file);
+            $sales->foto = $tujuan_upload . $nama_file;
+        }
+
+        // Update data lainnya
+        $sales->kode_sales = $request->input('kode_sales');
+        $sales->nama_sales = $request->input('nama_sales');
+        $sales->alamat = $request->input('alamat');
+        $sales->no_telp = $request->input('no_telp');
+        $sales->username = $request->input('username');
+
+        // Update password jika ada input
+        if ($request->filled('password')) {
+            $sales->password = Hash::make($request->input('password'));
+        }
+
+        $sales->pencapaian = 1;
+        $sales->update();
+
+        // Flash message ke sesi
+        session()->flash('update', 'Data sales diperbarui');
+
+        // Redirect ke halaman daftar item
+        return redirect()->route('daftar-sales');
     }
-
-    // Update data lainnya
-    $sales->kode_sales = $request->input('kode_sales');
-    $sales->nama_sales = $request->input('nama_sales');
-    $sales->alamat = $request->input('alamat');
-    $sales->no_telp = $request->input('no_telp');
-    $sales->username = $request->input('username');
-
-    // Update password jika ada input
-    if ($request->filled('password')) {
-        $sales->password = Hash::make($request->input('password'));
-    }
-
-    $sales->pencapaian = 1;
-    $sales->update();
-
-    // Flash message ke sesi
-    session()->flash('update', 'Data sales diperbarui');
-
-    // Redirect ke halaman daftar item
-    return redirect()->route('daftar-sales');
-}
 
     //delete sales
-    public function delete_sales (Request $request, $id_sales){
+    public function delete_sales(Request $request, $id_sales)
+    {
         $sales_hapus = Sales::findOrFail($id_sales);
         $sales_hapus->delete();
 
@@ -218,11 +225,12 @@ public function update_sales(Request $request, $id_sales)
         return redirect()->route('daftar-sales');
     }
 
-    public function edit_sales($id_sales){
+    public function edit_sales($id_sales)
+    {
         $sales = Sales::findOrFail($id_sales);
         return view('sales/edit-sales', compact('sales'));
     }
-    
+
     // Simpan Tambahan Stok
     public function simpan_stok_sales(Request $request)
     {
@@ -255,32 +263,34 @@ public function update_sales(Request $request, $id_sales)
         return redirect()->route('stok-sales');
     }
 
-    public function riwayat_stok_sales($kode_sales) {
+    public function riwayat_stok_sales($kode_sales)
+    {
         // Query untuk mendapatkan riwayat stok berdasarkan kode_sales dan mengelompokkan berdasarkan kode_item
         $riwayat_stok = DB::table('stok_sales')
-            ->select('kode_item','nama_item', 'nama_sales', DB::raw('SUM(stok_sales) as total_stok_sales'))
+            ->select('kode_item', 'nama_item', 'nama_sales', DB::raw('SUM(stok_sales) as total_stok_sales'))
             ->where('kode_sales', $kode_sales)
             ->groupBy('kode_item', 'nama_item', 'nama_sales')
             ->get();
 
         // Mengirimkan data riwayat stok ke view
         $data_sales = Sales::where('kode_sales', $kode_sales)->first();
-    
+
         return view('sales/riwayat-stok-sales', compact('riwayat_stok', 'data_sales'));
     }
-    
+
     public function delete_stok_sales(Request $request, $id_stok_sales)
-    {   
+    {
         $stok_sales = StokSales::findOrFail($id_stok_sales);
         $stok_sales->delete();
 
-         // Flash message ke sesi
-         session()->flash('delete', 'Data stok salesberhasil dihapus!');
+        // Flash message ke sesi
+        session()->flash('delete', 'Data stok salesberhasil dihapus!');
 
-         return redirect()->route('riwayat-sales');
+        return redirect()->route('riwayat-sales');
     }
- 
-    public function simpan_return_stok_sales(Request $request){
+
+    public function simpan_return_stok_sales(Request $request)
+    {
 
         // Mendekode data JSON yang dikirim dari form
         $data = json_decode($request->input('data'), true);
@@ -289,13 +299,13 @@ public function update_sales(Request $request, $id_sales)
         foreach ($data as $sales) {
             // Simpan ke database
             $return_stok = new ReturnStok();
-            $return_stok->id_transaksi = 'RS'.rand(10000, 99999);
-            $return_stok->kode_sales   = $sales['kodeSales'];
-            $return_stok->nama_sales   = $sales['namaSales'];
-            $return_stok->kode_item    = $sales['kodeItem'];
-            $return_stok->nama_item    = $sales['namaItem'];
-            $return_stok->return_stok  = $sales['returnStok'];
-            $return_stok->status       = $sales['status'];
+            $return_stok->id_transaksi = 'RS' . rand(10000, 99999);
+            $return_stok->kode_sales = $sales['kodeSales'];
+            $return_stok->nama_sales = $sales['namaSales'];
+            $return_stok->kode_item = $sales['kodeItem'];
+            $return_stok->nama_item = $sales['namaItem'];
+            $return_stok->return_stok = $sales['returnStok'];
+            $return_stok->status = $sales['status'];
             $return_stok->save();
         }
 
@@ -306,14 +316,15 @@ public function update_sales(Request $request, $id_sales)
         return redirect()->route('return-stok');
     }
 
-    public function delete_return_stok($id_return_stok) {
+    public function delete_return_stok($id_return_stok)
+    {
         $return_stok = ReturnStokSales::findOrFail($id_return_stok);
         $return_stok->delete();
 
-         // Flash message ke sesi
-         session()->flash('delete', 'Data return stok sales berhasil dihapus!');
+        // Flash message ke sesi
+        session()->flash('delete', 'Data return stok sales berhasil dihapus!');
 
-         return redirect()->route('return-stok');
+        return redirect()->route('return-stok');
 
     }
 
@@ -337,20 +348,20 @@ public function update_sales(Request $request, $id_sales)
     {
         $tgl_awal = $request->input('tgl_awal');
         $tgl_akhir = $request->input('tgl_akhir');
-    
+
         // If dates are the same, ensure the full day is covered
         $tgl_akhir = Carbon::parse($tgl_akhir)->endOfDay();
-    
+
         // Retrieve all sales data with associated invoices and visits
         $sales = Sales::with(['faktur', 'kunjungan'])->get();
-    
+
         // Calculate total sales and visits for each sales person within the date range
         foreach ($sales as $sale) {
             $sale->total_penjualan = $sale->faktur->whereBetween('created_at', [$tgl_awal, $tgl_akhir])->sum('stok_terjual');
             $sale->total_kunjungan = $sale->kunjungan->whereBetween('created_at', [$tgl_awal, $tgl_akhir])->count();
         }
-    
-        return view('sales.target-sales', compact('sales'));
-    }    
 
-}   
+        return view('sales.target-sales', compact('sales'));
+    }
+
+}

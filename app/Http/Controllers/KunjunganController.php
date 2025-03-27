@@ -25,7 +25,7 @@ class KunjunganController extends Controller
             'longitude' => 'required|numeric',    
         ]);
     
-            // Simpan data ke dalam tabel kunjungan atau tabel terkait lainnya
+        // Simpan data ke dalam tabel kunjungan atau tabel terkait lainnya
         $kunjungan = new Kunjungan();
         $kunjungan->id_toko = $validated['id_toko'];
         $kunjungan->kode_toko = $validated['kode_toko'];
@@ -77,6 +77,19 @@ public function getToko($id_toko)
     {
         $kunjungan = Kunjungan::where('kode_sales', Auth::guard('sales')->user()->kode_sales)->get();
         return view('app.kunjungan.app-daftar-kunjungan', compact('kunjungan'));
+    }
+    
+    public function getDetails($kode_sales)
+    {
+        // Use where clause to find data based on kode_sales
+        $kunjungan = Kunjungan::where('kode_sales', $kode_sales)->get();
+
+        if (!$kunjungan) {
+            return response()->json(['error' => 'Data tidak ditemukan'], 404);
+        }
+
+        // Send data to view for displaying in the modal
+        return view('sales.kunjungan-details', compact('kunjungan'))->render();
     }
 
 

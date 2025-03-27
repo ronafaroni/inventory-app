@@ -143,23 +143,23 @@ class TransaksiController extends Controller
         return view('transaksi.faktur-pembayaran');
     }
 
-    public function report_penjualan()
-    {
-        // Ambil data faktur dengan relasi yang dibutuhkan
-        $faktur_bayar = Faktur::with(['sales.toko', 'item']) // Pastikan 'item' adalah relasi untuk barang
-            ->select(
-                'kode_sales', // Asumsi kode_sales ada di tabel faktur
-                'kode_toko',  // Asumsi kode_toko ada di tabel faktur
-                'kode_item',  // ID Barang dari tabel faktur
-                DB::raw('SUM(stok_terjual) as total_terjual'), // Total jumlah barang terjual
-                DB::raw('SUM(total_bayar) as total_bayar') // Total nominal terjual
-            )
-            ->groupBy('kode_sales', 'kode_toko', 'kode_item')
-            ->get();
-    
-        // Return ke view dengan data yang telah diproses
-        return view('transaksi.report-penjualan', compact('faktur_bayar'));
-    }
+public function report_penjualan()
+{
+    // Ambil data faktur dengan relasi yang dibutuhkan
+    $faktur_bayar = Faktur::with(['sales.toko2', 'item']) // Pastikan semua relasi dimuat
+        ->select(
+            'kode_sales',
+            'kode_toko',
+            'kode_item',
+            DB::raw('SUM(stok_terjual) as total_terjual')
+        )
+        ->groupBy('kode_sales', 'kode_toko', 'kode_item')
+        ->orderBy('kode_sales') // Urutkan berdasarkan kode sales
+        ->orderBy('kode_toko')  // Urutkan berdasarkan toko
+        ->get();
+
+    return view('transaksi.report-penjualan', compact('faktur_bayar'));
+}
 
     public function exportPenjualan()
 {
